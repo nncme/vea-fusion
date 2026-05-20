@@ -12,6 +12,8 @@
 
 import { DashboardCards } from "./DashboardCards";
 import type { DashboardCardsProps } from "./DashboardCards";
+import { DashboardLowerGrid } from "./DashboardLowerGrid";
+import type { DashboardLowerGridProps } from "./DashboardLowerGrid";
 import { SpotlightSummonChip } from "./SpotlightOverlay";
 import "./DashboardHome.css";
 
@@ -22,6 +24,12 @@ export interface DashboardHomeProps {
   tokens?: DashboardCardsProps["tokens"];
   /** Runtime Health host list (forwarded to DashboardCards). */
   runtime?: DashboardCardsProps["runtime"];
+  /** Live event-stream rows (forwarded to DashboardLowerGrid). */
+  events?: DashboardLowerGridProps["events"];
+  /** Agent-roster rows (forwarded to DashboardLowerGrid). */
+  roster?: DashboardLowerGridProps["roster"];
+  /** Footer status-strip pairs (forwarded to DashboardLowerGrid). */
+  footer?: DashboardLowerGridProps["footer"];
   /** Summons the ⌘K Fabric spotlight — wired from the Pending card + chip. */
   onSummonSpotlight?: () => void;
 }
@@ -31,6 +39,9 @@ export function DashboardHome({
   pending,
   tokens,
   runtime,
+  events,
+  roster,
+  footer,
   onSummonSpotlight,
 }: DashboardHomeProps) {
   return (
@@ -47,6 +58,12 @@ export function DashboardHome({
         tokens={tokens}
         runtime={runtime}
         onSummonSpotlight={onSummonSpotlight}
+      />
+      <DashboardLowerGrid
+        events={events}
+        roster={roster}
+        footer={footer}
+        onViewAll={onSummonSpotlight}
       />
     </main>
   );

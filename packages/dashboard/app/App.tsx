@@ -912,7 +912,12 @@ function AppInner() {
   return (
     <>
       {optionEFrame}
+      {/* Option E: the legacy Header renders as a slimmed secondary contextual
+          toolbar BENEATH the TopBar (variant="subbar") — its brand wordmark is
+          suppressed so the TopBar is the sole header-level brand/nav surface.
+          All icon-bar / contextual controls remain intact. */}
       <Header
+        variant="subbar"
         isElectron={isElectron}
         onOpenSettings={handleOpenSettings}
         onOpenGitHubImport={modalManager.openGitHubImport}

@@ -212,6 +212,16 @@ export interface HeaderProps {
   isRemote?: boolean;
   /** Experimental feature flags controlling visibility of nav items. */
   experimentalFeatures?: { insights?: boolean; roadmap?: boolean; memoryView?: boolean; devServer?: boolean; devServerView?: boolean };
+  /**
+   * Visual variant of the Header.
+   *  - "primary" (default): full header with brand wordmark — the legacy standalone header.
+   *  - "subbar": slimmed secondary contextual toolbar rendered BENEATH the Option E
+   *    TopBar. Suppresses the redundant Fusion brand wordmark (TopBar already owns
+   *    the brand + primary nav) and re-skins the bar with AIME tokens. ALL
+   *    contextual controls (icon-bar, project switcher, search, view-toggle,
+   *    engine controls, settings) remain intact and functional.
+   */
+  variant?: "primary" | "subbar";
 }
 
 export function Header({
@@ -256,7 +266,9 @@ export function Header({
   onSelectNode,
   isRemote = false,
   experimentalFeatures,
+  variant = "primary",
 }: HeaderProps) {
+  const isSubbar = variant === "subbar";
   const mode: ViewportMode = useViewportMode();
   const isMobile = mode === "mobile";
   const isTablet = mode === "tablet";
@@ -532,33 +544,38 @@ export function Header({
   }, [onSearchChange]);
 
   return (
-    <div className="header-wrapper">
-      <header className="header">
+    <div className={`header-wrapper${isSubbar ? " header-wrapper--subbar" : ""}`}>
+      <header className={`header${isSubbar ? " header--subbar" : ""}`}>
         <div className="header-left">
-          <div className="header-brand">
-          <svg
-            className="header-logo"
-            width={24}
-            height={24}
-            viewBox="0 0 128 128"
-            fill="none"
-            aria-label="Fusion logo"
-            role="img"
-          >
-            <circle
-              cx="64"
-              cy="64"
-              r="52"
-              stroke="currentColor"
-              strokeWidth="8"
-            />
-            <path
-              d="M26 101C44 82 62 64 82 45C90 37 98 30 104 24C96 35 89 47 81 60C70 79 57 95 43 108C38 112 32 108 26 101Z"
-              fill="currentColor"
-            />
-          </svg>
-          <h1 className="logo">Fusion</h1>
-        </div>
+          {/* Brand wordmark — suppressed in the subbar variant: the Option E
+              TopBar already owns the Fusion·VEA brand, so rendering it here
+              would produce a duplicate brand surface (the double-header bug). */}
+          {!isSubbar && (
+            <div className="header-brand">
+              <svg
+                className="header-logo"
+                width={24}
+                height={24}
+                viewBox="0 0 128 128"
+                fill="none"
+                aria-label="Fusion logo"
+                role="img"
+              >
+                <circle
+                  cx="64"
+                  cy="64"
+                  r="52"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                />
+                <path
+                  d="M26 101C44 82 62 64 82 45C90 37 98 30 104 24C96 35 89 47 81 60C70 79 57 95 43 108C38 112 32 108 26 101Z"
+                  fill="currentColor"
+                />
+              </svg>
+              <h1 className="logo">Fusion</h1>
+            </div>
+          )}
 
         {/* Mobile Project Switch - dropdown trigger next to logo when at least one project exists (mobile only) */}
         {isMobile && projects.length >= 1 && onSelectProject && (

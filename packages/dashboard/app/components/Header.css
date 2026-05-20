@@ -12,6 +12,35 @@
   position: relative;
 }
 
+/* === Header — Option E "subbar" variant ===================================
+ * When the Option E TopBar is present, the legacy Header collapses into a
+ * slimmed secondary contextual toolbar that sits flush beneath it. The brand
+ * wordmark is removed in the component; here we re-skin the bar with AIME
+ * Leon Dore design tokens so it reads as a sub-toolbar, not a second header.
+ */
+.header--subbar {
+  /* Soft taupe secondary surface — visually subordinate to the TopBar. */
+  background: var(--paper-2);
+  /* Hairline rule at low opacity, consistent with TopBar's dividers. */
+  border-bottom: 1px solid color-mix(in srgb, var(--hairline) 12%, transparent);
+  /* Slimmer than the standalone header — it is a sub-bar, not a header. */
+  padding: var(--space-xs) var(--space-md);
+  min-height: 44px;
+  color: var(--ink);
+}
+
+/* Drop the gap the (now-removed) brand wordmark used to leave behind so the
+ * contextual controls hug the left edge cleanly. */
+.header--subbar .header-left {
+  gap: var(--space-xs);
+}
+
+/* Floating search drops below the subbar — keep it visually consistent. */
+.header-wrapper--subbar .header-floating-search {
+  background: var(--paper-2);
+  border-color: color-mix(in srgb, var(--hairline) 12%, transparent);
+}
+
 .header-floating-search {
   background: var(--surface);
   padding: var(--space-xs) var(--space-md) var(--space-sm);
