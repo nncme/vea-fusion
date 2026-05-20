@@ -86,10 +86,10 @@ const STATE_COLORS: Record<AgentState, { bg: string; text: string; border: strin
 };
 
 const RUN_STATUS_ICONS: Record<string, { icon: typeof CheckCircle; color: string }> = {
-  completed: { icon: CheckCircle, color: "var(--color-success, #3fb950)" },
-  failed: { icon: XCircle, color: "var(--color-error, #f85149)" },
-  active: { icon: Loader2, color: "var(--in-progress, #bc8cff)" },
-  terminated: { icon: Square, color: "var(--text-muted, #8b949e)" },
+  completed: { icon: CheckCircle, color: "var(--color-success)" },
+  failed: { icon: XCircle, color: "var(--color-error)" },
+  active: { icon: Loader2, color: "var(--in-progress)" },
+  terminated: { icon: Square, color: "var(--text-muted)" },
 };
 
 const MEMORY_LAYER_NAMES: Record<MemoryFileInfo["layer"], string> = {
@@ -345,7 +345,7 @@ export function AgentDetailView({ agentId, projectId, onClose, addToast, onChild
       return {
         label: "Unknown",
         icon: <Bot size={14} />,
-        color: "var(--text-muted, #8b949e)",
+        color: "var(--text-muted)",
         stateDerived: false,
       };
     }
@@ -784,16 +784,16 @@ function DashboardTab({
                   className="budget-badge"
                   style={{
                     background: budgetStatus.isOverBudget
-                      ? "var(--state-error-bg, rgba(248,81,73,0.15))"
+                      ? "var(--state-error-bg)"
                       : budgetStatus.isOverThreshold
-                        ? "var(--state-paused-bg, rgba(227,181,65,0.15))"
-                        : "var(--state-active-bg, rgba(63,185,80,0.15))",
+                        ? "var(--state-paused-bg)"
+                        : "var(--state-active-bg)",
                     color: budgetStatus.isOverBudget
-                      ? "var(--state-error-text, #f85149)"
+                      ? "var(--state-error-text)"
                       : budgetStatus.isOverThreshold
-                        ? "var(--state-paused-text, #e3b541)"
-                        : "var(--state-active-text, #3fb950)",
-                    border: `1px solid ${budgetStatus.isOverBudget ? "var(--state-error-border, #f85149)" : budgetStatus.isOverThreshold ? "var(--state-paused-border, #e3b541)" : "var(--state-active-border, #3fb950)"}`,
+                        ? "var(--state-paused-text)"
+                        : "var(--state-active-text)",
+                    border: `1px solid ${budgetStatus.isOverBudget ? "var(--state-error-border)" : budgetStatus.isOverThreshold ? "var(--state-paused-border)" : "var(--state-active-border)"}`,
                   }}
                 >
                   {budgetStatus.isOverBudget
@@ -1310,7 +1310,7 @@ function RunsTab({
                       Output
                     </div>
                     <pre style={{
-                      background: "var(--bg-tertiary, #161b22)",
+                      background: "var(--bg-tertiary)",
                       padding: "8px 12px",
                       borderRadius: "6px",
                       fontSize: "12px",
@@ -1330,12 +1330,12 @@ function RunsTab({
                 {/* Errors */}
                 {detailRun.stderrExcerpt && (
                   <div style={{ marginBottom: "8px" }}>
-                    <div style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", color: "var(--color-error, #f85149)", marginBottom: "4px" }}>
+                    <div style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", color: "var(--color-error)", marginBottom: "4px" }}>
                       Errors
                     </div>
                     <pre style={{
-                      background: "rgba(248, 81, 73, 0.1)",
-                      color: "var(--color-error, #f85149)",
+                      background: "var(--color-error)",
+                      color: "var(--color-error)",
                       padding: "8px 12px",
                       borderRadius: "6px",
                       fontSize: "12px",
@@ -1357,7 +1357,7 @@ function RunsTab({
                       Result
                     </div>
                     <pre style={{
-                      background: "var(--bg-tertiary, #161b22)",
+                      background: "var(--bg-tertiary)",
                       padding: "8px 12px",
                       borderRadius: "6px",
                       fontSize: "12px",
@@ -2379,7 +2379,7 @@ function InstructionsTab({
                   </span>
                 )}
                 {fileContentDirty && !isLoadingFile && (
-                  <span className="config-hint" style={{ color: "var(--color-warning, #e3b541)" }}>
+                  <span className="config-hint" style={{ color: "var(--signal)" }}>
                     Unsaved changes
                   </span>
                 )}

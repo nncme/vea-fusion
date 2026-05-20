@@ -424,7 +424,7 @@
 
 .agent-log-mode-toggle[aria-pressed="true"] {
   background: var(--accent);
-  color: var(--text-on-accent, #fff);
+  color: var(--text-on-accent);
   border-color: var(--accent);
 }
 
@@ -432,7 +432,7 @@
 .agent-log-summary {
   padding: var(--space-xs) var(--space-md);
   font-size: var(--text-xs, 12px);
-  color: var(--text-muted, #8b949e);
+  color: var(--text-muted);
   border-bottom: 1px solid var(--border);
   text-align: center;
 }
@@ -549,7 +549,7 @@
   border: none;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.6);
-  color: #fff;
+  color: var(--cta-text);
   cursor: pointer;
   font-size: 12px;
   line-height: 20px;
@@ -697,7 +697,7 @@
 }
 
 .detail-actions-menu-item-danger {
-  color: var(--color-error, #dc3545);
+  color: var(--color-error);
 }
 
 .detail-actions-menu-item-danger:hover {
@@ -910,19 +910,19 @@
 
 /* Semantic status colors for changed-file entries — theme-aware via CSS variables */
 .changes-file-status--added {
-  color: var(--status-color-added, #3fb950);
+  color: var(--status-color-added);
 }
 
 .changes-file-status--modified {
-  color: var(--status-color-modified, #58a6ff);
+  color: var(--status-color-modified);
 }
 
 .changes-file-status--deleted {
-  color: var(--status-color-deleted, #f85149);
+  color: var(--status-color-deleted);
 }
 
 .changes-file-status--unknown {
-  color: var(--status-color-unknown, #8b949e);
+  color: var(--status-color-unknown);
 }
 
 /* Stat summary in changes header */
@@ -936,11 +936,11 @@
 }
 
 .changes-stat-summary .diff-add {
-  color: var(--status-color-added, #3fb950);
+  color: var(--status-color-added);
 }
 
 .changes-stat-summary .diff-del {
-  color: var(--status-color-deleted, #f85149);
+  color: var(--status-color-deleted);
 }
 
 /* Task-specific changes header: stacked title + stats layout */
@@ -1009,7 +1009,7 @@
 }
 
 .detail-summary h4 {
-  color: var(--color-success, #3fb950);
+  color: var(--color-success);
   margin-bottom: var(--space-md);
 }
 

@@ -11,10 +11,10 @@ interface AgentRunHistoryProps {
 }
 
 const STATUS_ICONS: Record<string, { icon: typeof CheckCircle; color: string }> = {
-  completed: { icon: CheckCircle, color: "var(--color-success, #3fb950)" },
-  failed: { icon: XCircle, color: "var(--color-error, #f85149)" },
-  active: { icon: Loader2, color: "var(--in-progress, #bc8cff)" },
-  terminated: { icon: Square, color: "var(--text-muted, #8b949e)" },
+  completed: { icon: CheckCircle, color: "var(--color-success)" },
+  failed: { icon: XCircle, color: "var(--color-error)" },
+  active: { icon: Loader2, color: "var(--in-progress)" },
+  terminated: { icon: Square, color: "var(--text-muted)" },
 };
 
 export function AgentRunHistory({ agentId, projectId, onRunClick }: AgentRunHistoryProps) {

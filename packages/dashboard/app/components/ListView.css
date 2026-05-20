@@ -468,7 +468,7 @@
 }
 .list-status-badge--archived {
   background: var(--status-archived-bg);
-  color: var(--text-muted, #8b949e);
+  color: var(--text-muted);
 }
 
 .list-column-badge {

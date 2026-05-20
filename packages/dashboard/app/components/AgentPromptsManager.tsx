@@ -43,13 +43,13 @@ const ROLE_LABELS: Record<AgentCapability, string> = {
 
 /** Role badge colors */
 const ROLE_COLORS: Record<AgentCapability, string> = {
-  executor: "#3b82f6",
-  triage: "#f59e0b",
-  reviewer: "#8b5cf6",
-  merger: "#10b981",
-  scheduler: "#06b6d4",
-  engineer: "#ec4899",
-  custom: "#6b7280",
+  executor: "var(--accent)",
+  triage: "var(--signal)",
+  reviewer: "var(--accent)",
+  merger: "var(--color-success)",
+  scheduler: "var(--in-review)",
+  engineer: "var(--accent)",
+  custom: "var(--text-muted)",
 };
 
 /** Form data for editing/creating a custom template */

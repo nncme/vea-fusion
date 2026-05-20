@@ -365,9 +365,9 @@
   align-items: center;
   gap: var(--space-xs);
   padding: var(--space-xs) var(--space-sm);
-  background: var(--accent, #58a6ff);
-  color: #fff;
-  border: 1px solid var(--accent, #58a6ff);
+  background: var(--accent);
+  color: var(--cta-text);
+  border: 1px solid var(--accent);
   border-radius: var(--radius-md);
   font-size: 0.75rem;
   cursor: pointer;
@@ -375,8 +375,8 @@
 }
 
 .roadmaps-view__suggest-btn:hover {
-  background: var(--accent-hover, #4c94e6);
-  border-color: var(--accent-hover, #4c94e6);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 .roadmaps-view__suggest-btn:active {

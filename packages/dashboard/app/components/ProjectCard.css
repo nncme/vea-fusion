@@ -194,12 +194,12 @@
 }
 
 .project-card-action-pause {
-  color: var(--warning, #e3b341);
+  color: var(--warning, var(--signal));
 }
 
 .project-card-action-pause:hover:not(:disabled) {
   background: rgba(227, 179, 65, 0.1);
-  border-color: var(--warning, #e3b341);
+  border-color: var(--warning, var(--signal));
 }
 
 .project-card-action-open {

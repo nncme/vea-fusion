@@ -209,7 +209,7 @@
 .chat-message--user {
   align-self: flex-end;
   background: var(--accent);
-  color: var(--accent-text, #fff);
+  color: var(--accent-text, var(--cta-text));
   border-bottom-right-radius: 4px;
 }
 
@@ -663,7 +663,7 @@
   border-radius: 50%;
   border: none;
   background: var(--accent);
-  color: var(--accent-text, #fff);
+  color: var(--accent-text, var(--cta-text));
   cursor: pointer;
   display: flex;
   align-items: center;

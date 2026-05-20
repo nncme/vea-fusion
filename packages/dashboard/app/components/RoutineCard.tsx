@@ -42,10 +42,10 @@ function relativeTime(iso: string): string {
 }
 
 const TRIGGER_TYPE_COLORS: Record<RoutineTriggerType, string> = {
-  cron: "var(--color-blue, #3b82f6)",
-  webhook: "var(--color-purple, #a855f7)",
-  api: "var(--color-green, #22c55e)",
-  manual: "var(--color-gray, #6b7280)",
+  cron: "var(--accent)",
+  webhook: "var(--accent)",
+  api: "var(--color-success)",
+  manual: "var(--text-muted)",
 };
 
 const TRIGGER_TYPE_LABELS: Record<RoutineTriggerType, string> = {

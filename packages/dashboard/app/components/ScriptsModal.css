@@ -2245,24 +2245,24 @@
 
 /* Status-aware badge colors in the changed-files modal sidebar */
 .changed-files-badge--added {
-  color: var(--status-color-added, #3fb950);
-  border-color: var(--status-color-added, #3fb950);
+  color: var(--status-color-added, var(--color-success));
+  border-color: var(--status-color-added, var(--color-success));
 }
 
 .changed-files-badge--modified {
-  color: var(--status-color-modified, #58a6ff);
-  border-color: var(--status-color-modified, #58a6ff);
+  color: var(--status-color-modified, var(--accent));
+  border-color: var(--status-color-modified, var(--accent));
 }
 
 .changed-files-badge--deleted {
-  color: var(--status-color-deleted, #f85149);
-  border-color: var(--status-color-deleted, #f85149);
+  color: var(--status-color-deleted, var(--color-error));
+  border-color: var(--status-color-deleted, var(--color-error));
 }
 
 .changed-files-badge--renamed,
 .changed-files-badge--unknown {
-  color: var(--status-color-unknown, #8b949e);
-  border-color: var(--status-color-unknown, #8b949e);
+  color: var(--status-color-unknown, var(--text-muted));
+  border-color: var(--status-color-unknown, var(--text-muted));
 }
 
 /* ── Commit Form ── */
@@ -3493,7 +3493,7 @@
 .changes-diff-patch .diff-add,
 .gm-diff-patch [data-prefix="+"],
 .changes-diff-patch [data-prefix="+"] {
-  color: #3fb950;
+  color: var(--color-success);
   background-color: rgba(63, 185, 80, 0.12);
 }
 
@@ -3501,7 +3501,7 @@
 .changes-diff-patch .diff-del,
 .gm-diff-patch [data-prefix="-"],
 .changes-diff-patch [data-prefix="-"] {
-  color: #f85149;
+  color: var(--color-error);
   background-color: rgba(248, 81, 73, 0.12);
 }
 
@@ -3509,7 +3509,7 @@
 .changes-diff-patch .diff-hunk,
 .gm-diff-patch [data-prefix="@@"],
 .changes-diff-patch [data-prefix="@@"] {
-  color: #58a6ff;
+  color: var(--accent);
 }
 
 /* Block display for highlighted diff lines */
@@ -3529,7 +3529,7 @@
 [data-theme="light"] .changes-diff-patch .diff-add,
 [data-theme="light"] .gm-diff-patch [data-prefix="+"],
 [data-theme="light"] .changes-diff-patch [data-prefix="+"] {
-  color: #1a7f37;
+  color: var(--color-success);
   background-color: rgba(26, 127, 55, 0.1);
 }
 
@@ -3537,7 +3537,7 @@
 [data-theme="light"] .changes-diff-patch .diff-del,
 [data-theme="light"] .gm-diff-patch [data-prefix="-"],
 [data-theme="light"] .changes-diff-patch [data-prefix="-"] {
-  color: #cf222e;
+  color: var(--color-error);
   background-color: rgba(207, 34, 46, 0.1);
 }
 
@@ -3545,7 +3545,7 @@
 [data-theme="light"] .changes-diff-patch .diff-hunk,
 [data-theme="light"] .gm-diff-patch [data-prefix="@@"],
 [data-theme="light"] .changes-diff-patch [data-prefix="@@"] {
-  color: #0969da;
+  color: var(--accent);
 }
 
 /* Light theme changed-files modal overrides */
