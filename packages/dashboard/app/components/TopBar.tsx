@@ -135,6 +135,7 @@ export function TopBar({
 }: TopBarProps) {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   const handleTabClick = useCallback(
     (tab: TopBarTab) => {
@@ -171,6 +172,30 @@ export function TopBar({
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isMobileNavOpen]);
+
+  // Drawer focus management (A2): on open, move focus into the drawer (its
+  // first focusable nav control); on close, return focus to the hamburger.
+  // The close-side restore is gated by a ref so the very first render —
+  // which is also "closed" — does not steal focus on mount.
+  const drawerWasOpen = useRef(false);
+  useEffect(() => {
+    if (isMobileNavOpen) {
+      drawerWasOpen.current = true;
+      // Defer one frame so the drawer's nav items have rendered/laid out.
+      const raf = requestAnimationFrame(() => {
+        const firstFocusable = navRef.current?.querySelector<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        );
+        firstFocusable?.focus();
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+    if (drawerWasOpen.current) {
+      drawerWasOpen.current = false;
+      hamburgerRef.current?.focus();
+    }
+    return undefined;
   }, [isMobileNavOpen]);
 
   const showThemeToggle = Boolean(themeMode && onThemeModeChange);
@@ -295,10 +320,11 @@ export function TopBar({
       </div>
 
       {/* --- Mobile hamburger --------------------------------------- */}
-      {/* TODO(A2): drawer focus management — move focus into the drawer on
-          open and return it to the hamburger on close (deferred to the A2
-          wiring wave). */}
+      {/* Drawer focus management is handled in the isMobileNavOpen effect
+          above: focus moves into the drawer on open and returns to this
+          hamburger button on close (Esc / outside-click / tab select). */}
       <button
+        ref={hamburgerRef}
         type="button"
         className="topbar-hamburger"
         onClick={() => setIsMobileNavOpen((prev) => !prev)}

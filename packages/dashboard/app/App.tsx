@@ -23,6 +23,10 @@ import {
 import type { SectionId } from "./components/SettingsModal";
 import { MobileNavBar } from "./components/MobileNavBar";
 import { QuickChatFAB } from "./components/QuickChatFAB";
+import { TopBar, type TopBarTab } from "./components/TopBar";
+import { ActionTicker } from "./components/ActionTicker";
+import { SpotlightOverlay } from "./components/SpotlightOverlay";
+import { DashboardHome } from "./components/DashboardHome";
 import { ToastContainer } from "./components/ToastContainer";
 import { useBackgroundSessions } from "./hooks/useBackgroundSessions";
 import { useTasks } from "./hooks/useTasks";
@@ -89,6 +93,10 @@ function prefetchLazyViews() {
 }
 
 const SETUP_WARNING_DISMISSED_KEY = "kb-setup-warning-dismissed";
+
+// TODO(live-binding): Option E TopBar Fabric badge — stub count until the
+// Fabric approval-queue live binding lands (DESIGN.md §7, deferred wave).
+const FABRIC_PENDING_COUNT_STUB = 5;
 
 function AppInner() {
   const { toasts, addToast, removeToast } = useToast();
@@ -291,6 +299,38 @@ function AppInner() {
   const [milestoneSliceResumeSessionId, setMilestoneSliceResumeSessionId] = useState<string | undefined>(undefined);
   const [quickChatOpen, setQuickChatOpen] = useState(false);
   const [authTokenRecoveryOpen, setAuthTokenRecoveryOpen] = useState(false);
+
+  // --- Option E (DESIGN.md) -------------------------------------------------
+  // The Option E composite homepage is an ADDITIVE landing surface. The
+  // TopBar, ActionTicker and ⌘K SpotlightOverlay frame the ENTIRE app and
+  // persist across every existing Fusion view; only the homepage *body*
+  // (DashboardHome — the 3 cards) is conditional on `optionEHome`.
+  //
+  // optionEHome=true  → render DashboardHome (the new default landing)
+  // optionEHome=false → render the pre-existing Fusion app (Header + views),
+  //                     completely unchanged in behaviour.
+  // Handlers that depend on useProjectActions/useViewState are defined
+  // further down (handleTopBarTab) — these are just the raw state cells.
+  const [optionEHome, setOptionEHome] = useState(true);
+  const [spotlightOpen, setSpotlightOpen] = useState(false);
+
+  const openSpotlight = useCallback(() => setSpotlightOpen(true), []);
+  const closeSpotlight = useCallback(() => setSpotlightOpen(false), []);
+
+  // App-wide ⌘K / Ctrl+K summon. SpotlightOverlay is mounted in controlled
+  // mode (its `open` prop is owned here), so its own hotkey listener only
+  // *closes* it — the *open* path lives at the app level so ⌘K works from
+  // the Option E homepage and from every existing Fusion view alike.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSpotlightOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
   const [setupWarningDismissed, setSetupWarningDismissed] = useState(
     () => getScopedItem(SETUP_WARNING_DISMISSED_KEY, currentProject?.id) === "true",
   );
@@ -409,6 +449,49 @@ function AppInner() {
     closeSetupWizard: modalManager.closeSetupWizard,
     closeModelOnboarding: modalManager.closeModelOnboarding,
   });
+
+  // --- Option E TopBar router (depends on useProjectActions/useViewState) ---
+  // The TopBar's active tab is derived: "dashboard" while on the Option E
+  // homepage, otherwise it reflects whichever existing view is showing.
+  const topBarActiveTab: TopBarTab = optionEHome
+    ? "dashboard"
+    : taskView === "agents"
+      ? "agents"
+      : taskView === "memory"
+        ? "kg"
+        : "dashboard";
+
+  // Primary-nav router. Every tab routes to a pre-existing surface; nothing
+  // is replaced. "decisions" summons the ⌘K spotlight; "settings" opens the
+  // existing Settings modal — both leave the underlying view intact.
+  const handleTopBarTab = useCallback(
+    (tab: TopBarTab) => {
+      switch (tab) {
+        case "dashboard":
+          setOptionEHome(true);
+          return;
+        case "agents":
+          setOptionEHome(false);
+          handleTaskViewChange("agents");
+          return;
+        case "kg":
+          // Knowledge Graph maps to the existing Memory view.
+          setOptionEHome(false);
+          handleTaskViewChange("memory");
+          return;
+        case "decisions":
+          // Decisions = the Fabric approval queue → ⌘K spotlight.
+          openSpotlight();
+          return;
+        case "settings":
+          handleOpenSettings();
+          return;
+        default:
+          return;
+      }
+    },
+    [handleTaskViewChange, openSpotlight, handleOpenSettings],
+  );
 
   const { handleDetailClose } = useDeepLink({
     projectId: currentProject?.id,
@@ -774,8 +857,61 @@ function AppInner() {
     isOnboardingCompleted() &&
     !isPostOnboardingDismissed();
 
+  // Option E ambient frame — TopBar + ActionTicker + ⌘K SpotlightOverlay.
+  // These persist across the homepage AND every existing Fusion view.
+  // Stub data only for now (DESIGN.md §7 — live binding is a deferred wave).
+  const optionEFrame = (
+    <>
+      <TopBar
+        activeTab={topBarActiveTab}
+        onTabChange={handleTopBarTab}
+        fabricPendingCount={FABRIC_PENDING_COUNT_STUB}
+        onSummonFabric={openSpotlight}
+        tailnetIp="100.93.222.17"
+        operatorInitials="CN"
+        themeMode={themeMode}
+        onThemeModeChange={setThemeMode}
+      />
+      <ActionTicker onItemActivate={openSpotlight} />
+    </>
+  );
+  const optionESpotlight = (
+    <SpotlightOverlay
+      open={spotlightOpen}
+      onClose={closeSpotlight}
+      onSelect={closeSpotlight}
+      onOpenFabric={closeSpotlight}
+    />
+  );
+  // Always-on global overlays — modals/dialogs that must be mountable from
+  // ANY surface, not gated behind a view. AuthTokenRecoveryDialog surfaces
+  // an expired-token recovery flow triggered by a window event, so it must
+  // render on the Option E homepage AND the legacy branch alike. Defined
+  // once here and reused in both branches (same pattern as optionEFrame).
+  const optionEGlobalOverlays = (
+    <>
+      <AuthTokenRecoveryDialog open={authTokenRecoveryOpen} />
+    </>
+  );
+
+  // --- Option E homepage (the new additive default landing) ----------------
+  if (optionEHome) {
+    return (
+      <>
+        {optionEFrame}
+        {/* DashboardHome's pending/tokens/runtime props are intentionally
+            unpassed — that live-binding seam is a deferred wave (DESIGN.md §7). */}
+        <DashboardHome onSummonSpotlight={openSpotlight} />
+        {optionESpotlight}
+        {optionEGlobalOverlays}
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
+      </>
+    );
+  }
+
   return (
     <>
+      {optionEFrame}
       <Header
         isElectron={isElectron}
         onOpenSettings={handleOpenSettings}
@@ -950,7 +1086,8 @@ function AppInner() {
           modalManager.openModelOnboarding();
         }}
       />
-      <AuthTokenRecoveryDialog open={authTokenRecoveryOpen} />
+      {optionEGlobalOverlays}
+      {optionESpotlight}
     </>
   );
 }
