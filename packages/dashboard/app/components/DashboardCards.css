@@ -1,0 +1,307 @@
+/* === DashboardCards — Fusion Option E "three top cards" ===
+   Canonical spec: VEA/DESIGN.md §3.1.c / §4.3.
+   Visual reference: tasks/2026-05-19-fusion-fabric-designs/option-E-composite.html
+   AIME Leon Dore palette — every colour resolves through a var(--token).
+   Display numerals use GT Sectra / Newsreader serif (DESIGN.md §3 hard rule). */
+
+.top-cards {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1.4fr;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.top-card {
+  background: var(--linen);
+  border: 1px solid rgba(28, 26, 23, 0.1);
+  border-radius: var(--r);
+  padding: 24px;
+  position: relative;
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.18s ease;
+  box-shadow: var(--shadow-soft);
+}
+
+.top-card:hover {
+  border-color: rgba(28, 26, 23, 0.22);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+/* AIME readout-label — 10px / 0.14em / ink-3 */
+.top-card .eyebrow {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.top-card .eyebrow .tag-warn {
+  color: var(--accent);
+}
+.top-card .eyebrow .eyebrow-aux {
+  font-family: var(--font-mono);
+  color: var(--ink-4);
+  letter-spacing: 0.14em;
+}
+.top-card .eyebrow .eyebrow-aux.is-signal {
+  color: var(--signal);
+}
+
+/* === Card: Pending Decisions === */
+.card-pending .pending-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.card-pending .pending-num {
+  font-family: var(--font-display);
+  font-size: 64px;
+  line-height: 0.96;
+  letter-spacing: -0.028em;
+  color: var(--ink);
+  font-weight: 400;
+}
+.card-pending .pending-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.card-pending .pending-sub strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  list-style: none;
+}
+.pending-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-top: 1px solid rgba(28, 26, 23, 0.1);
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+.pending-item:first-child {
+  border-top: none;
+  padding-top: 4px;
+}
+.pending-item .pi-prio {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+}
+.pending-item .pi-prio.crit {
+  color: var(--accent-2);
+}
+.pending-item .pi-prio.high {
+  color: var(--accent);
+}
+.pending-item .pi-prio.norm {
+  color: var(--ink-3);
+}
+.pending-item .pi-text {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pending-item .pi-age {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-4);
+}
+
+.pending-cta {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  padding: 6px 0;
+  background: none;
+  border: none;
+  transition: color 0.14s ease;
+}
+.pending-cta:hover {
+  color: var(--ink);
+}
+.pending-cta kbd {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  background: var(--paper-2);
+  border: 1px solid rgba(28, 26, 23, 0.1);
+  padding: 2px 5px;
+  border-radius: 3px;
+  color: var(--ink-2);
+}
+
+/* === Card: Tokens per Hour === */
+.card-tokens .tokens-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.card-tokens .tokens-num {
+  font-family: var(--font-display);
+  font-size: 64px;
+  line-height: 0.96;
+  letter-spacing: -0.028em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+.card-tokens .tokens-unit {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+.card-tokens .tokens-delta {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--signal);
+  margin-bottom: 14px;
+}
+.card-tokens .tokens-delta.neg {
+  color: var(--accent);
+}
+
+.sparkline {
+  width: 100%;
+  height: 56px;
+  margin-top: 6px;
+  display: block;
+}
+.sparkline-fill {
+  fill: var(--signal-soft);
+  opacity: 0.85;
+}
+.sparkline-line {
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.sparkline-dot {
+  fill: var(--signal);
+  stroke: var(--linen);
+  stroke-width: 2;
+}
+
+.tokens-footer {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-4);
+  margin-top: 10px;
+}
+
+/* === Card: Runtime Health === */
+.card-runtime .runtime-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 16px;
+  margin-top: 4px;
+  list-style: none;
+}
+.runtime-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 12.5px;
+  color: var(--ink);
+  border-bottom: 1px solid rgba(28, 26, 23, 0.06);
+}
+.runtime-row:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+.runtime-pip {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 transparent;
+}
+.runtime-pip.ok {
+  background: var(--signal);
+  box-shadow: 0 0 0 3px rgba(138, 107, 42, 0.16);
+}
+.runtime-pip.warn {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px rgba(107, 29, 32, 0.16);
+}
+.runtime-pip.crit {
+  background: var(--accent-2);
+  box-shadow: 0 0 0 3px rgba(138, 42, 46, 0.2);
+}
+.runtime-host {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.runtime-status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  flex: 0 0 auto;
+}
+.runtime-status.ok {
+  color: var(--signal);
+}
+.runtime-status.warn {
+  color: var(--accent);
+}
+.runtime-status.crit {
+  color: var(--accent-2);
+}
+
+/* === Mobile — stack 1-up (DESIGN.md §4.5) === */
+@media (max-width: 768px) {
+  .top-cards {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .card-runtime .runtime-grid {
+    grid-template-columns: 1fr;
+  }
+}

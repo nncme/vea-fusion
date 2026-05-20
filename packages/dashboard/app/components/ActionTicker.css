@@ -1,0 +1,298 @@
+/*
+ * ActionTicker — Option E 44px persistent action bar.
+ * Canonical spec: VEA/DESIGN.md §4.2.
+ * Visual reference: tasks/2026-05-19-fusion-fabric-designs/option-E-composite.html
+ *
+ * Presentational component (A1.2 wave). Live-data binding and fixed
+ * positioning into the app shell are deferred to the A2 wave — this
+ * file styles the bar as a flow-positioned 44px strip.
+ *
+ * All colour/spacing values resolve through the AIME Leon Dore design
+ * tokens declared in app/styles.css. No hardcoded literals.
+ */
+
+.action-ticker {
+  height: 44px;
+  display: flex;
+  align-items: stretch;
+  background: var(--paper-2);
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--underline);
+  padding-left: var(--s5);
+  box-shadow: var(--shadow-soft);
+  font-family: var(--font-sans);
+}
+
+/* ---- LIVE label ------------------------------------------------- */
+.action-ticker__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  padding-right: var(--s4);
+  margin-right: var(--s4);
+  border-right: 1px solid var(--underline);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.action-ticker__live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: action-ticker-pulse 2.2s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+@keyframes action-ticker-pulse {
+  0%   { box-shadow: 0 0 0 0 var(--accent-soft); }
+  70%  { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ---- Screen-reader live region ---------------------------------- */
+/* Visually hidden; announces only the active item title on rotation. */
+.action-ticker__sr-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- Rotating rail ---------------------------------------------- */
+.action-ticker__rail {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-ticker__item {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-right: var(--s5);
+  font-size: 13px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+  transition:
+    opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.action-ticker__item.is-active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* non-active slots must not steal pointer / focus */
+.action-ticker__item:not(.is-active) {
+  pointer-events: none;
+}
+
+.action-ticker__item:hover .action-ticker__title,
+.action-ticker__item:focus-visible .action-ticker__title {
+  color: var(--accent);
+}
+
+.action-ticker__item:focus-visible {
+  outline: none;
+}
+
+.action-ticker__prio {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 7px;
+  border-radius: 3px;
+  border: 1px solid currentColor;
+}
+
+/* P0 critical → accent-2 ; P1 high → accent ; P2/P3 → quiet ink-3 */
+.action-ticker__prio--crit { color: var(--accent-2); }
+.action-ticker__prio--high { color: var(--accent); }
+.action-ticker__prio--norm { color: var(--ink-3); }
+
+.action-ticker__title {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.15s ease;
+}
+
+.action-ticker__meta {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.action-ticker__meta strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.action-ticker__cta {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-left: 1px solid var(--underline);
+  padding-left: 14px;
+}
+
+/* ---- Controls (dot progress + pause) ---------------------------- */
+.action-ticker__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: 0 var(--s4);
+  border-left: 1px solid var(--underline);
+}
+
+.action-ticker__dots {
+  display: flex;
+  gap: var(--s1);
+}
+
+.action-ticker__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ink-4);
+  transition: background 0.15s ease;
+}
+
+.action-ticker__dot.is-active {
+  background: var(--accent);
+}
+
+.action-ticker__pause {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-3);
+  background: var(--linen);
+  border: 1px solid var(--underline);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.action-ticker__pause:hover {
+  color: var(--ink);
+  border-color: var(--hairline);
+}
+
+.action-ticker__pause-bars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.action-ticker__pause-bars i {
+  width: 2px;
+  height: 10px;
+  background: currentColor;
+}
+
+/* paused → bars become a play triangle */
+.action-ticker__pause.is-paused .action-ticker__pause-bars {
+  display: none;
+}
+
+.action-ticker__pause.is-paused::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 7px solid currentColor;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+/* ---- Mobile collapse <880px ------------------------------------- */
+.action-ticker__mobile-badge {
+  display: none;
+}
+
+@media (max-width: 880px) {
+  .action-ticker {
+    padding-left: var(--s4);
+  }
+
+  .action-ticker__label,
+  .action-ticker__controls {
+    display: none;
+  }
+
+  .action-ticker__rail {
+    display: none;
+  }
+
+  .action-ticker__mobile-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    padding: 0 var(--s3);
+    margin: auto 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-2);
+    background: var(--linen);
+    border: 1px solid var(--underline);
+    border-radius: var(--r-pill);
+    height: 28px;
+    cursor: pointer;
+  }
+
+  .action-ticker__mobile-dot {
+    color: var(--accent);
+  }
+}
+
+/* ---- Reduced motion --------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .action-ticker__live-dot {
+    animation: none;
+  }
+
+  .action-ticker__item {
+    transition: opacity 0.001ms linear;
+    transform: none;
+  }
+
+  .action-ticker__item.is-active {
+    transform: none;
+  }
+}

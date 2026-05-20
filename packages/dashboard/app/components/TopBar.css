@@ -1,0 +1,380 @@
+/* === TopBar — Fusion · VEA Option E (DESIGN.md §4.1) ===
+   56px persistent top navigation. AIME Leon Dore palette — every color
+   resolves through a var(--token); no hardcoded hex. */
+
+.topbar {
+  /* Single source of truth for the bar height — referenced by the
+     responsive drawer offset so the two literals can't drift. */
+  --topbar-h: 56px;
+  display: flex;
+  align-items: stretch;
+  height: var(--topbar-h);
+  padding-left: var(--s5);
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  color: var(--ink);
+  border-bottom: 1px solid color-mix(in srgb, var(--hairline) 10%, transparent);
+  backdrop-filter: blur(10px) saturate(110%);
+  -webkit-backdrop-filter: blur(10px) saturate(110%);
+}
+
+/* --- Brand ----------------------------------------------------------- */
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding-right: 22px;
+  margin-right: 14px;
+  border-right: 1px solid color-mix(in srgb, var(--hairline) 10%, transparent);
+}
+
+.topbar-brand-mark {
+  position: relative;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: var(--linen);
+}
+.topbar-brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.topbar-brand-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+}
+.topbar-brand-name em {
+  font-style: italic;
+  font-family: var(--font-display);
+  color: var(--accent);
+}
+
+/* --- Nav ------------------------------------------------------------- */
+.topbar-nav {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  gap: 0;
+}
+
+.topbar-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: 0 var(--s4);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--ink-2);
+  background: none;
+  border: none;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+.topbar-tab:hover {
+  color: var(--ink);
+}
+.topbar-tab:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-strong);
+}
+
+/* Active internal tab — single 1px ink underline (AIME nav pattern). */
+.topbar-tab--active {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.topbar-tab-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+
+/* External (outbound) links — quieter ink-3, subtle ↗ glyph. */
+.topbar-tab--external {
+  color: var(--ink-3);
+  text-decoration: none;
+}
+.topbar-tab--external:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--hairline) 3%, transparent);
+}
+.topbar-ext-glyph {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-4);
+  transform: translateY(-1px);
+}
+
+/* Disabled external (VitalOS — domain not yet provisioned). */
+.topbar-tab--disabled {
+  color: var(--ink-4);
+  cursor: not-allowed;
+}
+.topbar-tab--disabled:hover {
+  color: var(--ink-4);
+  background: none;
+}
+
+.topbar-ext-divider {
+  width: 1px;
+  margin: 12px var(--s2) 12px var(--s1);
+  background: color-mix(in srgb, var(--hairline) 10%, transparent);
+}
+
+/* --- Right cluster --------------------------------------------------- */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  margin-left: auto;
+  padding-right: var(--s2);
+}
+
+/* Theme toggle */
+.topbar-theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--ink-3);
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--hairline) 10%, transparent);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+.topbar-theme-toggle:hover {
+  color: var(--ink);
+  background: var(--paper-2);
+}
+.topbar-theme-toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-strong);
+}
+
+/* Fabric pill — oxblood, paper text, animated pulse on the badge. */
+.topbar-fabric {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  height: 32px;
+  padding: 0 var(--s3);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--hairline) 10%, transparent);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+.topbar-fabric:hover {
+  color: var(--ink);
+  background: var(--paper-2);
+}
+.topbar-fabric:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-strong);
+}
+
+.topbar-fabric-glyph {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.topbar-fabric-label {
+  letter-spacing: 0.01em;
+}
+
+.topbar-fabric-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--linen);
+  background: var(--accent);
+  border-radius: var(--r-pill);
+  animation: topbar-badge-pulse 2.2s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+@keyframes topbar-badge-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 42%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+}
+
+.topbar-kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-3);
+  background: var(--paper-2);
+  border: 1px solid color-mix(in srgb, var(--hairline) 10%, transparent);
+  border-radius: 3px;
+  padding: 2px 5px;
+}
+
+/* Tailnet pill — taupe surface, hairline border, gold signal dot. */
+.topbar-tailnet {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  height: 34px;
+  padding: 0 var(--s3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  border: 1px solid color-mix(in srgb, var(--hairline) 10%, transparent);
+  border-radius: var(--r-pill);
+}
+
+.topbar-tailnet-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--signal);
+  animation: topbar-tailnet-pulse 2.4s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+@keyframes topbar-tailnet-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--signal) 45%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--signal) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--signal) 0%, transparent);
+  }
+}
+
+.topbar-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--paper);
+  background: var(--ink);
+  border: 1px solid var(--ink);
+}
+
+/* --- Mobile hamburger ------------------------------------------------ */
+.topbar-hamburger {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 40px;
+  margin-left: var(--s2);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.topbar-hamburger-bar {
+  width: 18px;
+  height: 1.5px;
+  background: var(--ink);
+  border-radius: 1px;
+}
+.topbar-hamburger:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-strong);
+}
+
+/* --- Responsive — DESIGN.md §4.5 (collapse at 880px) ----------------- */
+@media (max-width: 880px) {
+  .topbar {
+    padding-left: var(--s4);
+  }
+
+  .topbar-hamburger {
+    display: flex;
+  }
+
+  /* Nav collapses into a drawer dropped below the bar. */
+  .topbar-nav {
+    position: absolute;
+    top: var(--topbar-h);
+    left: 0;
+    right: 0;
+    flex: initial;
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--s2);
+    background: var(--paper);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--hairline) 10%, transparent);
+    box-shadow: var(--shadow-soft);
+    z-index: 49;
+  }
+  .topbar-nav:not(.topbar-nav--open) {
+    display: none;
+  }
+
+  .topbar-tab {
+    height: 44px;
+    padding: 0 var(--s3);
+    border-bottom: none;
+    border-left: 2px solid transparent;
+  }
+  .topbar-tab--active {
+    border-bottom-color: transparent;
+    border-left-color: var(--ink);
+  }
+
+  .topbar-ext-divider {
+    width: auto;
+    height: 1px;
+    margin: var(--s2) var(--s3);
+  }
+
+  /* Right cluster condenses — tailnet label hidden, Fabric becomes a badge. */
+  .topbar-tailnet-label {
+    display: none;
+  }
+}
