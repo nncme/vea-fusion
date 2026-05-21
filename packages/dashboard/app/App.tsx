@@ -915,11 +915,23 @@ function AppInner() {
       {/* Option E: the legacy Header renders as a slimmed secondary contextual
           toolbar BENEATH the TopBar (variant="subbar") — its brand wordmark is
           suppressed so the TopBar is the sole header-level brand/nav surface.
-          All icon-bar / contextual controls remain intact. Gated to project
-          views only: its controls (git manager, terminal, search) require an
-          active project, so on non-project views it would just stack an empty
-          ~44px subbar under the TopBar (the double-header bug, C.1.3). */}
-      {viewMode === "project" && currentProject && (
+          All icon-bar / contextual controls remain intact.
+
+          Gating (C.1.3, corrects b18a5906): the subbar IS the Kanban board's
+          toolbar — its grid/list toggle + search belong to the task board.
+          b18a5906 gated on `viewMode === "project" && currentProject`, but a
+          workspace ("vea") is also active on the Agents and Knowledge Graph
+          tabs, so that condition stayed TRUE there and the subbar still
+          stacked under the TopBar (the double-header bug). The TopBar tab is
+          derived from `taskView` (agents→Agents, memory→Knowledge Graph,
+          board/list→Kanban). So additionally require the Kanban board view
+          itself — `taskView === "board" || taskView === "list"` — which is
+          FALSE on agents/memory and therefore correctly suppresses the subbar
+          on the Agents / Knowledge Graph tabs (and behind the
+          Decisions/Settings modals, which leave the underlying view intact). */}
+      {viewMode === "project" &&
+        currentProject &&
+        (taskView === "board" || taskView === "list") && (
       <Header
         variant="subbar"
         isElectron={isElectron}
