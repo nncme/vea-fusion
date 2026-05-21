@@ -915,7 +915,11 @@ function AppInner() {
       {/* Option E: the legacy Header renders as a slimmed secondary contextual
           toolbar BENEATH the TopBar (variant="subbar") — its brand wordmark is
           suppressed so the TopBar is the sole header-level brand/nav surface.
-          All icon-bar / contextual controls remain intact. */}
+          All icon-bar / contextual controls remain intact. Gated to project
+          views only: its controls (git manager, terminal, search) require an
+          active project, so on non-project views it would just stack an empty
+          ~44px subbar under the TopBar (the double-header bug, C.1.3). */}
+      {viewMode === "project" && currentProject && (
       <Header
         variant="subbar"
         isElectron={isElectron}
@@ -973,6 +977,7 @@ function AppInner() {
           devServerView: devServerEnabled,
         }}
       />
+      )}
       {viewMode === "project" && currentProject && !nodesOpen && taskView !== "missions" && !modalManager.isPlanningOpen && (
         <SessionNotificationBanner
           sessions={sessionsNeedingInput}
