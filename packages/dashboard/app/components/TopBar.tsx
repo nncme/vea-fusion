@@ -55,14 +55,21 @@ const EXTERNAL_LINKS: ExternalNavLink[] = [
   },
   {
     label: "VitalOS",
-    href: "https://vitals.anen.me",
-    disabled: true,
-    title: "VitalOS Dashboard — reserved, coming soon",
+    href: "https://vitals-app.anen.me/",
+    title: "Open VitalOS Dashboard in a new tab",
   },
   {
     label: "CosmosOS",
     href: "https://cosmos-app.anen.me",
     title: "Open CosmosOS Dashboard in a new tab",
+  },
+  // Wave-E LLM telemetry surface — served by llm_telemetry_server.py
+  // on Mac loopback (8446) + Tailscale. External hostname pending DNS;
+  // until then operators hit the Tailscale URL directly.
+  {
+    label: "LLM",
+    href: "http://100.82.179.42:8446/",
+    title: "Open LLM Telemetry (Wave E) in a new tab",
   },
 ];
 
