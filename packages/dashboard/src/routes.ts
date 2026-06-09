@@ -3678,6 +3678,130 @@ export function createApiRoutes(store: TaskStore, options?: ServerOptions): Rout
    * Complete the first-run setup by registering projects.
    * Body: { projects: Array<{ path: string, name: string, isolationMode?: "in-process" | "child-process" }> }
    */
+  // ── VEA Live-Data Proxy Routes (C.4.1 + C.4.2) ──────────────────────────
+
+  /**
+   * GET /api/fabric/stats — relay Fabric service stats for Pending Decisions card.
+   * Proxies http://100.68.214.103:8445/stats (internal Fabric service).
+   */
+  router.get("/api/fabric/stats", async (_req, res) => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      try {
+        const response = await fetch("http://100.68.214.103:8445/stats", {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          return res.status(response.status).json({
+            error: "Fabric service unreachable",
+            status: response.status,
+          });
+        }
+        const data = await response.json();
+        res.json(data);
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    } catch (err) {
+      res.status(500).json({
+        error: "Failed to fetch Fabric stats",
+        details: err instanceof Error ? err.message : String(err),
+      });
+    }
+  });
+
+  /**
+   * GET /api/fabric/log — relay Fabric service activity log for ActionTicker.
+   * Proxies http://100.68.214.103:8445/log (internal Fabric service).
+   */
+  router.get("/api/fabric/log", async (_req, res) => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      try {
+        const response = await fetch("http://100.68.214.103:8445/log", {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          return res.status(response.status).json({
+            error: "Fabric service unreachable",
+            status: response.status,
+          });
+        }
+        const data = await response.json();
+        res.json(data);
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    } catch (err) {
+      res.status(500).json({
+        error: "Failed to fetch Fabric log",
+        details: err instanceof Error ? err.message : String(err),
+      });
+    }
+  });
+
+  /**
+   * GET /api/vea/kg — Knowledge Graph summary (entity count, recent additions).
+   * Reads ~/Documents/Development/basic-memory/knowledge-graph.jsonl directly.
+   */
+  router.get("/api/vea/kg", async (_req, res) => {
+    try {
+      const homeDir = process.env.HOME || "/tmp";
+      const kgPath = join(homeDir, "Documents/Development/basic-memory/knowledge-graph.jsonl");
+
+      let content: string;
+      try {
+        content = await nodeFs.promises.readFile(kgPath, "utf-8");
+      } catch (fsErr) {
+        // File doesn't exist or can't be read — graceful fallback
+        return res.json({
+          totalCount: 0,
+          count24h: 0,
+          recent: [],
+          error: `KG file not found at ${kgPath}`,
+        });
+      }
+
+      const lines = content.trim().split("\n").filter(line => line.length > 0);
+
+      const entities: unknown[] = [];
+      for (const line of lines) {
+        try {
+          entities.push(JSON.parse(line));
+        } catch {
+          // Skip malformed lines
+        }
+      }
+
+      const now = Date.now();
+      const dayAgo = now - 24 * 60 * 60 * 1000;
+      const recent24h = entities.filter(e => {
+        const ent = e as Record<string, unknown>;
+        const ts = new Date((ent.timestamp || ent.created_at || new Date(0)) as string | number).getTime();
+        return ts > dayAgo;
+      });
+
+      res.json({
+        totalCount: entities.length,
+        count24h: recent24h.length,
+        recent: recent24h.slice(-10).reverse(),
+      });
+    } catch (err) {
+      res.status(500).json({
+        error: "Failed to fetch KG data",
+        details: err instanceof Error ? err.message : String(err),
+      });
+    }
+  });
+
   router.post("/complete-setup", async (req, res) => {
     try {
       const { CentralCore } = await import("@fusion/core");
