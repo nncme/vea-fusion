@@ -42,17 +42,17 @@ function relativeTime(iso: string): string {
 }
 
 const SCHEDULE_TYPE_COLORS: Record<string, string> = {
-  hourly: "var(--color-blue, #3b82f6)",
-  daily: "var(--color-green, #22c55e)",
-  weekly: "var(--color-purple, #a855f7)",
-  monthly: "var(--color-orange, #f97316)",
-  custom: "var(--color-gray, #6b7280)",
-  every15Minutes: "var(--color-cyan, #06b6d4)",
-  every30Minutes: "var(--color-teal, #14b8a6)",
-  every2Hours: "var(--color-indigo, #6366f1)",
-  every6Hours: "var(--color-rose, #f43f5e)",
-  every12Hours: "var(--color-amber, #f59e0b)",
-  weekdays: "var(--color-emerald, #10b981)",
+  hourly: "var(--accent)",
+  daily: "var(--color-success)",
+  weekly: "var(--accent)",
+  monthly: "var(--signal)",
+  custom: "var(--text-muted)",
+  every15Minutes: "var(--in-review)",
+  every30Minutes: "var(--in-review)",
+  every2Hours: "var(--accent)",
+  every6Hours: "var(--color-error)",
+  every12Hours: "var(--signal)",
+  weekdays: "var(--color-success)",
 };
 
 interface ScheduleCardProps {

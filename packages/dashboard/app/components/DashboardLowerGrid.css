@@ -1,0 +1,297 @@
+/**
+ * DashboardLowerGrid — Option E composite homepage LOWER section
+ * (DESIGN.md "Layer 3" / option-E-composite.html `.lower-grid`).
+ * AIME Leon Dore tokens only; no hardcoded hex.
+ */
+
+.lower-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--s5);
+  max-width: var(--max);
+  margin: var(--s5) auto 0;
+}
+
+/* ---- Shared panel surface — matches the .top-card styling ---- */
+.lower-grid .panel {
+  background: var(--linen);
+  border: 1px solid var(--underline);
+  border-radius: var(--r);
+  padding: var(--s5) var(--s5);
+  box-shadow: var(--shadow-soft);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.lower-grid .panel:hover {
+  border-color: rgba(28, 26, 23, 0.22);
+  box-shadow: var(--shadow-card);
+}
+
+.lower-grid .panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--s4);
+}
+
+.lower-grid .panel-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.lower-grid .panel-link {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.lower-grid .panel-link:hover {
+  color: var(--ink);
+}
+
+/* ---- Live event stream ---- */
+.stream-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stream-row {
+  display: grid;
+  grid-template-columns: 80px 76px 1fr 70px;
+  align-items: center;
+  gap: var(--s3);
+  padding: 11px 0;
+  border-top: 1px solid rgba(28, 26, 23, 0.06);
+  font-size: 13px;
+}
+
+.stream-row:first-child {
+  border-top: none;
+}
+
+.stream-row .ts {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-4);
+}
+
+.stream-row .who {
+  width: fit-content;
+  padding: 2px 9px;
+  border-radius: var(--r-pill);
+  background: var(--paper-2);
+  border: 1px solid var(--underline);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: lowercase;
+  color: var(--ink-3);
+}
+
+/* Agent label-colours — three discrete inks within the AIME spine. */
+.stream-row .who.helm {
+  color: var(--accent);
+  border-color: rgba(107, 29, 32, 0.22);
+}
+
+.stream-row .who.kairos {
+  color: var(--signal);
+  border-color: rgba(138, 107, 42, 0.28);
+}
+
+.stream-row .who.ogun {
+  color: var(--ink-2);
+  border-color: rgba(28, 26, 23, 0.22);
+  background: var(--paper-3);
+}
+
+.stream-row .msg {
+  color: var(--ink-2);
+  line-height: 1.4;
+}
+
+.stream-row .msg code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--paper-2);
+  padding: 1px 6px;
+  border-radius: var(--r-sm);
+  color: var(--accent);
+}
+
+.stream-row .status {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+
+.stream-row .status.done {
+  color: var(--signal);
+}
+
+.stream-row .status.run {
+  color: var(--accent);
+}
+
+/* ---- Agent roster ---- */
+.roster-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.agent-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s3) 0;
+  border-bottom: 1px solid rgba(28, 26, 23, 0.06);
+}
+
+.agent-row:last-child {
+  border-bottom: none;
+}
+
+.agent-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-pill);
+  background: var(--paper-2);
+  border: 1px solid var(--underline);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Agent glyphs — ink-on-tinted-paper, never a dark-mode gradient. */
+.agent-glyph.helm {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--linen);
+}
+
+.agent-glyph.kairos {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--linen);
+}
+
+.agent-glyph.ogun {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.agent-name {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.agent-status {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.agent-status.ok {
+  color: var(--signal);
+}
+
+.agent-status.warn {
+  color: var(--accent);
+}
+
+.agent-status-dot {
+  font-size: 8px;
+}
+
+/* ---- Footer status strip (spans both columns) ---- */
+.footer-strip {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  margin-top: var(--s2);
+  padding: var(--s4) var(--s5);
+  background: var(--paper-2);
+  border: 1px solid var(--underline);
+  border-radius: var(--r);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.footer-strip .label-pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s5);
+}
+
+.footer-strip .footer-stat .lbl {
+  margin-right: var(--s2);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+
+.footer-strip .footer-stat .val.signal {
+  color: var(--signal);
+}
+
+.footer-strip .footer-stat .val.accent {
+  color: var(--accent);
+}
+
+.footer-strip .footer-hint {
+  color: var(--ink-3);
+}
+
+.footer-strip kbd {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  background: var(--linen);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--underline);
+  color: var(--ink);
+}
+
+/* ---- Responsive: stack to single column ---- */
+@media (max-width: 768px) {
+  .lower-grid {
+    grid-template-columns: 1fr;
+    gap: var(--s4);
+  }
+
+  .stream-row {
+    grid-template-columns: 60px 1fr;
+    gap: var(--s3);
+  }
+
+  .stream-row .who,
+  .stream-row .status {
+    display: none;
+  }
+}

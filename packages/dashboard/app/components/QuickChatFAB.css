@@ -8,7 +8,7 @@
   border-radius: 50%;
   border: 1px solid color-mix(in srgb, var(--todo) 45%, var(--border));
   background: var(--todo);
-  color: #fff;
+  color: var(--cta-text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -340,7 +340,7 @@
   border-radius: var(--radius-sm);
   border: 1px solid color-mix(in srgb, var(--todo) 45%, var(--border));
   background: var(--todo);
-  color: #fff;
+  color: var(--cta-text);
   display: inline-flex;
   align-items: center;
   justify-content: center;

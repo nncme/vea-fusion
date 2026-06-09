@@ -190,7 +190,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.6);
-  color: #fff;
+  color: var(--cta-text);
   border: none;
   border-radius: 50%;
   width: 16px;

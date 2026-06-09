@@ -134,6 +134,7 @@ async function loadCommandHandlers() {
   const { runPluginList, runPluginInstall, runPluginUninstall, runPluginEnable, runPluginDisable } = await import("./commands/plugin.js");
   const { runPluginCreate } = await import("./commands/plugin-scaffold.js");
   const { runSkillsSearch, runSkillsInstall } = await import("./commands/skills.js");
+  const { runIdentityList } = await import("./commands/identity-list.js");
 
   return {
     runDashboard,
@@ -212,6 +213,7 @@ async function loadCommandHandlers() {
     runPluginCreate,
     runSkillsSearch,
     runSkillsInstall,
+    runIdentityList,
   };
 }
 
@@ -221,6 +223,7 @@ fn — AI-orchestrated task board
 Usage:
   fn                                  Launch the dashboard (same as fn dashboard)
   fn init [opts]                      Initialize a new fn project (--name, --path, --git)
+  fn identity list [--config <path>]  Print VEA identity table (core agents + domain orchestrators)
   fn dashboard                        Start the board web UI
   fn dashboard --paused               Start with automation paused
   fn dashboard --dev                  Start web UI only (no AI engine)
@@ -485,6 +488,7 @@ async function main() {
     runPluginCreate,
     runSkillsSearch,
     runSkillsInstall,
+    runIdentityList,
   } = await loadCommandHandlers();
 
   try {
@@ -498,6 +502,22 @@ async function main() {
         const git = args.includes("--git");
 
         await runInit({ name, path, git });
+        break;
+      }
+
+      case "identity": {
+        const subcommand = args[1];
+        if (!subcommand || subcommand === "list" || subcommand === "ls") {
+          // Optional --config <path>
+          const cfgIdx = args.indexOf("--config");
+          const cfgPath =
+            cfgIdx !== -1 && cfgIdx + 1 < args.length ? args[cfgIdx + 1] : undefined;
+          await runIdentityList(cfgPath);
+          break;
+        }
+        console.error(`Unknown identity subcommand: ${subcommand}`);
+        console.error("Try: fn identity list [--config <path>]");
+        process.exit(1);
         break;
       }
 

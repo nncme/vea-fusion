@@ -524,7 +524,12 @@ export function createServer(store: TaskStore, options?: ServerOptions): ReturnT
       res.setHeader("Cache-Control", "no-store, max-age=0");
       res.sendFile(join(clientDir, "version.json"), (err) => {
         if (err) {
-          res.status(404).json({ version: null });
+          // Missing version file is a benign "can't check" state, not an error.
+          // Respond 200 with a null version so the client treats it as
+          // "no version info" without logging a console network error.
+          if (!res.headersSent) {
+            res.status(200).json({ version: null });
+          }
         }
       });
     });
@@ -548,6 +553,21 @@ export function createServer(store: TaskStore, options?: ServerOptions): ReturnT
     const clientId = typeof req.query.clientId === "string" ? req.query.clientId : undefined;
     const projectId = typeof req.query.projectId === "string" ? req.query.projectId : undefined;
     markSSEClientAlive(clientId, projectId);
+    res.status(204).end();
+  });
+
+  // Best-effort client-side perf beacon. Used by the dashboard to report a
+  // perf measurement (e.g. dashboard-load timing) when browser devtools aren't
+  // available. Always responds 204 so the telemetry call never error-logs.
+  app.post("/api/_perf/dashboard-load", sseControlRateLimit, (req, res) => {
+    try {
+      const body = (req.body ?? {}) as { source?: unknown; message?: unknown };
+      const source = typeof body.source === "string" ? body.source : "unknown";
+      const message = typeof body.message === "string" ? body.message : "";
+      runtimeLogger.info("dashboard-perf", { source, message });
+    } catch {
+      // best-effort only — never fail a telemetry beacon
+    }
     res.status(204).end();
   });
 

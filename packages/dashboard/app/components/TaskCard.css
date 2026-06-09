@@ -119,7 +119,7 @@
 
 .card-status-badge.paused {
   background: var(--status-done-bg-deep);
-  color: var(--text-muted, #8b949e);
+  color: var(--text-muted);
 }
 
 .card-status-badge.awaiting-approval {
@@ -149,7 +149,7 @@
 }
 .card-status-badge--archived {
   background: var(--status-archived-bg);
-  color: var(--text-muted, #8b949e);
+  color: var(--text-muted);
 }
 
 .card.stuck {
@@ -286,7 +286,7 @@
 
 .card.paused {
   opacity: 0.55;
-  border-left: 3px solid var(--text-secondary, #888);
+  border-left: 3px solid var(--text-secondary);
   cursor: default;
 }
 
@@ -787,7 +787,7 @@
 }
 
 .card-delete-btn:hover {
-  color: var(--color-error, #f85149);
+  color: var(--color-error);
 }
 
 .card-delete-btn:focus {

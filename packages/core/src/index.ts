@@ -613,3 +613,13 @@ export type { ChatStoreEvents } from "./chat-store.js";
 
 // ── Error helpers ─────────────────────────────────────────
 export { getErrorMessage } from "./error-message.js";
+
+// ── Identity bridge ───────────────────────────────────────
+export { IdentityBridge } from "./identity/index.js";
+export type {
+  CoreAgent,
+  DomainOrchestrator,
+  IdentitiesConfig,
+  LabelNamespace,
+  SleepWindow,
+} from "./identity/index.js";

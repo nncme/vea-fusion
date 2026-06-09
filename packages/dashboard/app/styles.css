@@ -32,13 +32,19 @@
   justify-content: center;
 }
 
-/* === Design Tokens (Theme-Agnostic Defaults) === */
+/* === Design Tokens — AIME Leon Dore (Fusion Option E) ===
+   Canonical spec: VEA/DESIGN.md §3. Light-mode editorial palette.
+   Token NAMES are preserved for component compatibility (A0 wave is
+   value-only). New AIME-native token names (--paper, --ink, --accent,
+   --signal, etc.) are ADDED in the color :root block below. */
 :root {
-  /* Typography */
-  --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-mono: "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  /* Typography — AIME type stack (Söhne sans / GT Sectra display / JetBrains mono) */
+  --font-sans: "Söhne", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-display: "GT Sectra", "Newsreader", Georgia, "Times New Roman", serif;
+  --font-primary: var(--font-sans);
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-  /* Spacing Scale */
+  /* Spacing Scale — 4pt grid (AIME --s1..--s9 added as aliases below) */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;
@@ -46,12 +52,32 @@
   --space-xl: 24px;
   --space-2xl: 32px;
 
-  /* Border Radius Scale */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-pill: 10px;
+  /* AIME 4pt-grid scale (DESIGN.md §3) */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
+  --s9: 96px;
+
+  /* Border Radius Scale — AIME radii (DESIGN.md §3): --r-sm 6 / --r 10 / --r-lg 18 / --r-pill 999 */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --radius-xl: 18px;
+  --radius-pill: 999px;
+
+  /* AIME radius aliases */
+  --r-sm: 6px;
+  --r: 10px;
+  --r-lg: 18px;
+  --r-pill: 999px;
+
+  /* Content max-width (DESIGN.md §3) */
+  --max: 1320px;
 
   /* Component-specific tokens */
   --btn-padding: var(--space-sm) var(--space-lg);
@@ -70,16 +96,22 @@
   /* PWA standalone mode bottom gap (FN-1626): extra breathing room for iOS home indicator */
   --standalone-bottom-gap: 0px;
 
-  /* Shadow tokens */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 8px rgba(88, 166, 255, 0.3);
-  --glow-success: 0 0 8px rgba(46, 160, 67, 0.3);
-  --glow-warning: 0 0 8px rgba(227, 179, 65, 0.3);
-  --glow-danger: 0 0 8px rgba(248, 81, 73, 0.3);
-  --focus-ring: 0 0 0 2px rgba(88, 166, 255, 0.15);
-  --focus-ring-strong: 0 0 0 2px rgba(88, 166, 255, 0.3);
+  /* Shadow tokens — tinted to warm ink, never neutral black (DESIGN.md §3 hard rule) */
+  --shadow-sm: 0 1px 0 rgba(28, 26, 23, 0.04);
+  --shadow-md: 0 1px 0 rgba(28, 26, 23, 0.04), 0 12px 32px -18px rgba(28, 26, 23, 0.18);
+  --shadow-lg: 0 1px 0 rgba(28, 26, 23, 0.05), 0 24px 56px -28px rgba(28, 26, 23, 0.28);
+  --shadow-soft: 0 1px 0 rgba(28, 26, 23, 0.04), 0 12px 32px -18px rgba(28, 26, 23, 0.18);
+  --shadow-card: 0 1px 0 rgba(28, 26, 23, 0.05), 0 24px 56px -28px rgba(28, 26, 23, 0.28);
+  /* --shadow-overlay — deepest elevation, reserved for the ⌘K Fabric
+     spotlight and modal surfaces (DESIGN.md §3). Ink-tinted per the AIME
+     shadow convention; never neutral black. */
+  --shadow-overlay: 0 2px 1px rgba(28, 26, 23, 0.06), 0 48px 96px -32px rgba(28, 26, 23, 0.42);
+  --shadow-glow: 0 0 8px rgba(107, 29, 32, 0.18);
+  --glow-success: 0 0 8px rgba(138, 107, 42, 0.28);
+  --glow-warning: 0 0 8px rgba(107, 29, 32, 0.22);
+  --glow-danger: 0 0 8px rgba(138, 42, 46, 0.3);
+  --focus-ring: 0 0 0 2px rgba(107, 29, 32, 0.15);
+  --focus-ring-strong: 0 0 0 3px rgba(107, 29, 32, 0.28);
 
   /* Animation tokens */
   --transition-instant: 0.1s ease;
@@ -99,49 +131,74 @@
 }
 
 :root {
-  --bg: #0d1117;
-  --surface: #161b22;
-  --card: #21262d;
-  --card-hover: #282e36;
+  /* === AIME Leon Dore — warm-neutral spine (DESIGN.md §3) ===
+     New AIME-native token names. Components consume the legacy
+     names below; these are the canonical source values. */
+  --paper: #f3eee5;        /* page */
+  --paper-2: #ece5d7;      /* soft taupe — secondary surfaces */
+  --paper-3: #e0d6c2;      /* deeper taupe — panels */
+  --linen: #f8f4ec;        /* lightest cream — cards */
+  --ink: #1c1a17;          /* near-black, warm */
+  --ink-2: #3a352e;        /* secondary type */
+  --ink-3: #6e6457;        /* tertiary type / captions */
+  --ink-4: #a59783;        /* muted */
+  --hairline: #1c1a17;     /* used at 8-12% opacity for rules */
+  --underline: rgba(28, 26, 23, 0.14);
+
+  /* one disciplined accent — deep oxblood */
+  --accent-2: #8a2a2e;
+  --accent-soft: #f0d9da;
+
+  /* support — muted gold for "PR" / signal only */
+  --signal: #8a6b2a;
+  --signal-soft: #ece1c1;
+
+  /* === Legacy surface/text tokens — rebased onto the AIME palette ===
+     Value-only retheme: NAMES preserved so existing components don't break. */
+  --bg: var(--paper);
+  --surface: var(--linen);
+  --card: var(--linen);
+  --card-hover: var(--paper-2);
   /* Neutral transient hover/press surface. Theme contract: defined in :root, light mode, and every color-theme block. */
-  --surface-hover: color-mix(in srgb, var(--surface) 90%, var(--text) 10%);
+  --surface-hover: color-mix(in srgb, var(--surface) 90%, var(--ink) 10%);
   /* Semantic neutral surface tiers for subtle fills, section headers, compact chips, and emphasized hover states. */
-  --surface-subtle: color-mix(in srgb, var(--surface) 96%, var(--text) 4%);
-  --surface-muted: color-mix(in srgb, var(--surface) 94%, var(--text) 6%);
-  --surface-emphasis: color-mix(in srgb, var(--surface) 92%, var(--text) 8%);
-  --surface-hover-strong: color-mix(in srgb, var(--surface) 88%, var(--text) 12%);
-  --bg-secondary: color-mix(in srgb, var(--surface) 70%, var(--card));
-  --bg-tertiary: color-mix(in srgb, var(--surface) 40%, var(--card));
-  --border: #30363d;
-  --text: #e6edf3;
-  --text-muted: #8b949e;
-  --text-dim: #484f58;
+  --surface-subtle: color-mix(in srgb, var(--surface) 96%, var(--ink) 4%);
+  --surface-muted: color-mix(in srgb, var(--surface) 94%, var(--ink) 6%);
+  --surface-emphasis: color-mix(in srgb, var(--surface) 92%, var(--ink) 8%);
+  --surface-hover-strong: color-mix(in srgb, var(--surface) 88%, var(--ink) 12%);
+  --bg-secondary: var(--paper-2);
+  --bg-tertiary: var(--paper-3);
+  --border: var(--paper-3);
+  --text: var(--ink);
+  --text-muted: var(--ink-3);
+  --text-dim: var(--ink-4);
 
-  --triage: #d29922;
-  --todo: #58a6ff;
-  --in-progress: #00e5ff;
-  --in-progress-rgb: 0, 229, 255;
-  --in-review: #3fb950;
-  --done: #8b949e;
+  /* Kanban / workflow status hues — oxblood-accented, gold-signalled */
+  --triage: #8a6b2a;          /* gold — pending/triage */
+  --todo: #6b1d20;            /* oxblood — primary accent surrogate */
+  --in-progress: #6b1d20;     /* oxblood — active */
+  --in-progress-rgb: 107, 29, 32;
+  --in-review: #8a6b2a;       /* gold signal — healthy/in-review */
+  --done: #6e6457;            /* warm tertiary ink — completed */
 
-  --color-success: #3fb950;
-  --color-error: #f85149;
-  --color-error-dark: #da3633;
-  --color-muted: #8b949e;
-  --color-info: #1f6feb;
-  --color-warning: #ca8a04;
+  --color-success: #8a6b2a;   /* gold signal */
+  --color-error: #8a2a2e;     /* oxblood-2 */
+  --color-error-dark: #6b1d20;/* deep oxblood */
+  --color-muted: #6e6457;
+  --color-info: #6b1d20;
+  --color-warning: #8a6b2a;
 
-  /* Workflow Step type / state colors */
-  --ws-pre-merge: #3b82f6;
-  --ws-post-merge: #0ea58c;
-  --ws-info: #06b6d4;
-  --ws-warning: #ca8a04;
-  --ws-success: #22c55e;
-  --ws-error: #ef4444;
-  --ws-error-dark: #dc2626;
-  --ws-teal: #0ea58c;
-  --ws-quality: #3b82f6;
-  --ws-security: #ef4444;
+  /* Workflow Step type / state colors — AIME oxblood/gold/ink range */
+  --ws-pre-merge: #6b1d20;
+  --ws-post-merge: #8a6b2a;
+  --ws-info: #6b1d20;
+  --ws-warning: #8a6b2a;
+  --ws-success: #8a6b2a;
+  --ws-error: #8a2a2e;
+  --ws-error-dark: #6b1d20;
+  --ws-teal: #8a6b2a;
+  --ws-quality: #6b1d20;
+  --ws-security: #8a2a2e;
 
   /* Status background tokens (theme-aware via color-mix) */
   --status-triage-bg: color-mix(in srgb, var(--triage) 15%, transparent);
@@ -173,27 +230,27 @@
   --provider-opencode: #38bdf8;
   --provider-icon-contrast: var(--bg);
 
-  /* Task-creation CTA tokens */
-  --cta-bg: #238636;
-  --cta-border: #2ea043;
-  --cta-text: #fff;
-  --cta-bg-hover: #2ea043;
-  --cta-border-hover: #3fb950;
-  --cta-glow: 0 0 8px rgba(46, 160, 67, 0.3);
+  /* Task-creation CTA tokens — oxblood-filled, linen text (AIME) */
+  --cta-bg: var(--accent);
+  --cta-border: var(--accent-2);
+  --cta-text: var(--linen);
+  --cta-bg-hover: var(--accent-2);
+  --cta-border-hover: var(--accent-2);
+  --cta-glow: 0 0 8px rgba(107, 29, 32, 0.22);
 
-  /* === Agent State Colors === */
-  --state-idle-bg: rgba(139, 148, 158, 0.15);
-  --state-idle-text: #8b949e;
-  --state-idle-border: #8b949e;
-  --state-active-bg: rgba(46, 160, 67, 0.15);
-  --state-active-text: #3fb950;
-  --state-active-border: #3fb950;
-  --state-paused-bg: rgba(227, 179, 65, 0.15);
-  --state-paused-text: #e3b541;
-  --state-paused-border: #e3b541;
-  --state-error-bg: rgba(248, 81, 73, 0.15);
-  --state-error-text: #f85149;
-  --state-error-border: #f85149;
+  /* === Agent State Colors — AIME ink/gold/oxblood === */
+  --state-idle-bg: rgba(110, 100, 87, 0.14);
+  --state-idle-text: #6e6457;
+  --state-idle-border: #a59783;
+  --state-active-bg: rgba(138, 107, 42, 0.15);
+  --state-active-text: #8a6b2a;
+  --state-active-border: #8a6b2a;
+  --state-paused-bg: rgba(138, 107, 42, 0.12);
+  --state-paused-text: #8a6b2a;
+  --state-paused-border: #8a6b2a;
+  --state-error-bg: rgba(138, 42, 46, 0.15);
+  --state-error-text: #8a2a2e;
+  --state-error-border: #8a2a2e;
 
   /* === Mission & Milestone Status Colors === */
   --mission-planning-bg: color-mix(in srgb, var(--triage) 15%, transparent);
@@ -202,8 +259,8 @@
   --mission-active-text: var(--in-review);
   --mission-blocked-bg: color-mix(in srgb, var(--color-error) 15%, transparent);
   --mission-blocked-text: var(--color-error);
-  --mission-complete-bg: color-mix(in srgb, #3b82f6 15%, transparent);
-  --mission-complete-text: #3b82f6;
+  --mission-complete-bg: color-mix(in srgb, var(--ink-2) 15%, transparent);
+  --mission-complete-text: var(--ink-2);
   --mission-archived-bg: var(--bg-tertiary);
   --mission-archived-text: var(--text-secondary);
 
@@ -212,28 +269,28 @@
   --slice-pending-text: var(--triage);
   --slice-active-bg: color-mix(in srgb, var(--in-review) 15%, transparent);
   --slice-active-text: var(--in-review);
-  --slice-complete-bg: color-mix(in srgb, #3b82f6 15%, transparent);
-  --slice-complete-text: #3b82f6;
+  --slice-complete-bg: color-mix(in srgb, var(--ink-2) 15%, transparent);
+  --slice-complete-text: var(--ink-2);
 
   /* === Feature (Task) Status Colors === */
   --feature-defined-bg: color-mix(in srgb, var(--triage) 15%, transparent);
   --feature-defined-text: var(--triage);
-  --feature-triaged-bg: color-mix(in srgb, #a855f7 15%, transparent);
-  --feature-triaged-text: #a855f7;
+  --feature-triaged-bg: color-mix(in srgb, var(--accent) 15%, transparent);
+  --feature-triaged-text: var(--accent);
   --feature-in-progress-bg: color-mix(in srgb, var(--in-review) 15%, transparent);
   --feature-in-progress-text: var(--in-review);
-  --feature-done-bg: color-mix(in srgb, #3b82f6 15%, transparent);
-  --feature-done-text: #3b82f6;
+  --feature-done-bg: color-mix(in srgb, var(--ink-2) 15%, transparent);
+  --feature-done-text: var(--ink-2);
 
   /* === Autopilot State Colors === */
-  --autopilot-inactive-bg: color-mix(in srgb, #94a3b8 15%, transparent);
-  --autopilot-inactive-text: #94a3b8;
+  --autopilot-inactive-bg: color-mix(in srgb, var(--ink-4) 15%, transparent);
+  --autopilot-inactive-text: var(--ink-3);
   --autopilot-watching-bg: color-mix(in srgb, var(--in-review) 15%, transparent);
   --autopilot-watching-text: var(--in-review);
-  --autopilot-activating-bg: color-mix(in srgb, #3b82f6 15%, transparent);
-  --autopilot-activating-text: #3b82f6;
-  --autopilot-completing-bg: color-mix(in srgb, #a855f7 15%, transparent);
-  --autopilot-completing-text: #a855f7;
+  --autopilot-activating-bg: color-mix(in srgb, var(--accent) 15%, transparent);
+  --autopilot-activating-text: var(--accent);
+  --autopilot-completing-bg: color-mix(in srgb, var(--ink-2) 15%, transparent);
+  --autopilot-completing-text: var(--ink-2);
 
   /* === Loop State Colors === */
   --loop-idle-bg: var(--bg-tertiary);
@@ -245,9 +302,9 @@
   --loop-validating-bg: color-mix(in srgb, var(--color-warning) 15%, transparent);
   --loop-validating-text: var(--color-warning);
   --loop-validating-indicator: var(--color-warning);
-  --loop-needs-fix-bg: color-mix(in srgb, #f97316 15%, transparent);
-  --loop-needs-fix-text: #f97316;
-  --loop-needs-fix-indicator: #f97316;
+  --loop-needs-fix-bg: color-mix(in srgb, var(--accent-2) 15%, transparent);
+  --loop-needs-fix-text: var(--accent-2);
+  --loop-needs-fix-indicator: var(--accent-2);
   --loop-passed-bg: color-mix(in srgb, var(--color-success) 15%, transparent);
   --loop-passed-text: var(--color-success);
   --loop-passed-indicator: var(--color-success);
@@ -268,10 +325,10 @@
   /* === Interview Modal Icon Colors === */
   --icon-milestone: var(--triage);
   --icon-slice: var(--in-review);
-  --icon-feature: #3b82f6;
+  --icon-feature: var(--ink-2);
 
-  /* === Accent Color === */
-  --accent: #7c5cbf;
+  /* === Accent Color — AIME deep oxblood (DESIGN.md §3) === */
+  --accent: #6b1d20;
 
   /* === Log Entry Background Tokens === */
   --log-tool-bg: color-mix(in srgb, var(--accent) 8%, transparent);
@@ -279,42 +336,146 @@
   --log-error-bg: color-mix(in srgb, var(--color-error) 6%, transparent);
 
   /* === Mailbox compose FAB & badges === */
-  --fab-bg: var(--todo);
-  --fab-text: #fff;
+  --fab-bg: var(--accent);
+  --fab-text: var(--linen);
 
   /* === Mission autopilot indicators === */
-  --autopilot-pulse: var(--color-success);
-  --autopilot-icon: #eab308;
-  --autopilot-shadow: rgba(34, 197, 94, 0.4);
+  --autopilot-pulse: var(--signal);
+  --autopilot-icon: var(--signal);
+  --autopilot-shadow: rgba(138, 107, 42, 0.4);
 
   /* === Mission toggle & badge backgrounds === */
-  --toggle-checked-bg: rgba(34, 197, 94, 0.2);
-  --meta-badge-bg: rgba(63, 185, 80, 0.1);
+  --toggle-checked-bg: rgba(138, 107, 42, 0.2);
+  --meta-badge-bg: rgba(138, 107, 42, 0.12);
 
-  /* === Mission event type colors (semantic — adapted for light in [data-theme="light"]) === */
-  --event-error-text: #fca5a5;
-  --event-state-text: #93c5fd;
-  --event-task-text: #6ee7b7;
-  --event-slice-text: #fcd34d;
-  --event-autopilot-text: #d8b4fe;
-  --event-error-bg: rgba(239, 68, 68, 0.15);
-  --event-state-bg: rgba(59, 130, 246, 0.15);
-  --event-task-bg: rgba(16, 185, 129, 0.15);
-  --event-slice-bg: rgba(245, 158, 11, 0.15);
-  --event-autopilot-bg: rgba(168, 85, 247, 0.15);
+  /* === Mission event type colors — AIME ink/oxblood/gold (light-mode legible) === */
+  --event-error-text: #8a2a2e;
+  --event-state-text: #3a352e;
+  --event-task-text: #8a6b2a;
+  --event-slice-text: #8a6b2a;
+  --event-autopilot-text: #6b1d20;
+  --event-error-bg: rgba(138, 42, 46, 0.12);
+  --event-state-bg: rgba(58, 53, 46, 0.1);
+  --event-task-bg: rgba(138, 107, 42, 0.12);
+  --event-slice-bg: rgba(138, 107, 42, 0.12);
+  --event-autopilot-bg: rgba(107, 29, 32, 0.12);
 
   /* === Card mission badge === */
-  --badge-mission-text: #a78bfa;
-  --badge-mission-text-hover: #c4b5fd;
-  --badge-mission-bg: rgba(167, 139, 250, 0.12);
-  --badge-mission-bg-hover: rgba(167, 139, 250, 0.22);
+  --badge-mission-text: #6b1d20;
+  --badge-mission-text-hover: #8a2a2e;
+  --badge-mission-bg: rgba(107, 29, 32, 0.1);
+  --badge-mission-bg-hover: rgba(107, 29, 32, 0.18);
 
-  /* === Terminal background === */
-  --terminal-bg: #1e1e1e;
+  /* === Terminal background — kept deep (terminals are dark surfaces), warmed to ink === */
+  --terminal-bg: #1c1a17;
 
   /* === Model combobox favorite star === */
-  --star-idle: #6b7280;
-  --star-active: #f59e0b;
+  --star-idle: #a59783;
+  --star-active: #8a6b2a;
+
+  /* ====================================================================
+     === Legacy token aliases → AIME spine (A0.1) ===
+     --------------------------------------------------------------------
+     Stream A0 was a value-only retheme: it rebased token VALUES onto the
+     AIME warm-neutral palette but missed ~68 token NAMES that components
+     still reference. Undefined `var(--x)` references fell through to
+     old-palette literal fallbacks (GitHub-dark surfaces / white text /
+     blue accents) — or, for `var(--x)` with NO fallback, rendered an
+     invalid color. This block aliases every undefined-but-referenced
+     token to its canonical AIME equivalent so no off-palette literal is
+     ever reachable. Each alias chain terminates at a defined AIME token
+     (no var() cycles). Token layer only — components are untouched.
+     ==================================================================== */
+
+  /* --- Foreground / text tiers → --ink / --ink-2 / --ink-3 / --ink-4 --- */
+  --text-primary: var(--ink);          /* primary type */
+  --text-secondary: var(--ink-3);      /* secondary type — had NO fallback */
+  --text-tertiary: var(--ink-4);       /* tertiary / captions */
+  --text-accent: var(--accent);        /* oxblood-tinted emphasis text */
+  --text-error: var(--color-error);    /* error text */
+  --text-on-accent: var(--linen);      /* text atop oxblood fills (was #fff) */
+  --color-text-muted: var(--ink-3);    /* muted body text */
+
+  /* --- Surfaces / backgrounds → --paper tiers / --linen --- */
+  --bg-primary: var(--paper);          /* page background */
+  --bg-surface: var(--linen);          /* default surface */
+  --bg-card: var(--linen);             /* card surface */
+  --bg-elevated: var(--linen);         /* elevated/raised surface */
+  --bg-hover: var(--surface-hover);    /* hover surface */
+  --bg-input: var(--linen);            /* input field surface */
+  --card-bg: var(--linen);             /* card surface (alt name) */
+  --surface-bg: var(--linen);          /* surface (alt name; was rgba white) */
+  --surface-dimmed: var(--paper-3);    /* dimmed panel (was #0d1117 GH-dark) */
+  --surface-elevated: var(--linen);    /* elevated surface (was #161b22 GH-dark) */
+  --surface-raised: var(--linen);      /* raised surface */
+  --surface-input: var(--linen);       /* input surface */
+  --hover: var(--surface-hover);       /* generic hover surface */
+
+  /* --- Borders / dividers → --border / --hairline / --underline --- */
+  --border-color: var(--border);       /* default border */
+  --border-primary: var(--border);     /* primary border */
+  --border-subtle: var(--underline);   /* subtle divider */
+  --border-hover: var(--paper-3);      /* border on hover */
+  --border-active: var(--accent);      /* active/focused border */
+
+  /* --- Accent family → --accent / --accent-2 / --signal --- */
+  --accent-color: var(--accent);            /* primary accent (was blue) */
+  --accent-color-light: var(--accent-soft); /* soft accent tint (was blue) */
+  --accent-bg: var(--surface-hover);        /* accent-tinted surface */
+  --accent-hover: var(--accent-2);          /* accent hover (was blue) */
+  --accent-text: var(--linen);              /* text atop accent (was #fff) */
+  --accent-green: var(--signal);            /* "green"/positive → gold signal */
+  --color-accent: var(--accent);            /* accent (alt name) */
+  --color-accent-soft: var(--accent-soft);  /* soft accent (alt name) */
+  --color-primary: var(--accent);           /* primary brand color */
+  --color-primary-rgb: 107, 29, 32;         /* --accent #6b1d20 as RGB triplet */
+  --primary: var(--accent);                 /* primary (alt name) */
+  --primary-bg: var(--accent);              /* primary-filled surface */
+  --button-primary-bg: var(--accent);       /* primary button fill */
+  --button-primary-text: var(--linen);      /* primary button text */
+
+  /* --- Semantic status (short aliases) → AIME oxblood / gold range --- */
+  --success: var(--color-success);     /* gold signal */
+  --error: var(--color-error);         /* oxblood-2 */
+  --warning: var(--color-warning);     /* gold signal */
+  --info: var(--color-info);           /* oxblood */
+  --failed: var(--color-error);        /* oxblood-2 */
+
+  /* --- Kanban surface aliases --- */
+  --todo-bg: color-mix(in srgb, var(--todo) 12%, transparent);     /* was blue rgba */
+  --todo-border: color-mix(in srgb, var(--todo) 28%, transparent); /* was blue rgba */
+
+  /* --- Named palette swatches → mapped onto the disciplined AIME range.
+         These were a full rainbow (blue/green/purple/...) off-palette.
+         Collapse onto ink / oxblood / gold so nothing renders off-brand. */
+  --color-blue: var(--accent);         /* → oxblood */
+  --color-indigo: var(--accent);       /* → oxblood */
+  --color-purple: var(--accent-2);     /* → oxblood-2 */
+  --color-rose: var(--accent-2);       /* → oxblood-2 */
+  --color-cyan: var(--signal);         /* → gold signal */
+  --color-teal: var(--signal);         /* → gold signal */
+  --color-emerald: var(--signal);      /* → gold signal */
+  --color-green: var(--signal);        /* → gold signal */
+  --color-amber: var(--signal);        /* → gold signal */
+  --color-orange: var(--signal);       /* → gold signal */
+  --color-gray: var(--ink-3);          /* → tertiary ink */
+
+  /* --- Diff / VCS status colors → AIME ink/oxblood/gold --- */
+  --status-color-added: var(--signal);       /* added → gold (was #3fb950) */
+  --status-color-deleted: var(--color-error);/* deleted → oxblood (was #f85149) */
+  --status-color-modified: var(--accent);    /* modified → oxblood (was #58a6ff) */
+  --status-color-unknown: var(--ink-4);      /* unknown → muted ink (was #8b949e) */
+
+  /* --- Layout / sizing tokens (non-color) — explicit defaults so the
+         token resolves; values match the inline fallbacks already used. */
+  --text-xs: 12px;
+  --keyboard-overlap: 0px;
+  --vv-height: calc(100dvh - var(--keyboard-overlap, 0px));
+  --mobile-nav-height: 56px;
+  --overlay-padding-top: 10vh;
+  --quick-chat-min-width: 320px;
+  --quick-chat-min-height: 200px;
+  --executor-status-touch-size: calc(var(--space-lg) * 2);
 }
 
 html,

@@ -268,7 +268,7 @@
 .mission-btn--danger {
   background: var(--color-error-dark);
   border-color: var(--color-error);
-  color: #fff;
+  color: var(--cta-text);
 }
 
 .mission-btn--danger:hover:not(:disabled) {
@@ -568,7 +568,7 @@
 
 .mission-list__item-progress-bar {
   height: 100%;
-  background: var(--accent-green, #22c55e);
+  background: var(--accent-green);
   border-radius: 2px;
   transition: width 0.3s ease;
 }
@@ -582,33 +582,33 @@
 }
 
 .mission-health-badge--healthy {
-  background: var(--color-success, #22c55e);
+  background: var(--color-success);
 }
 
 .mission-health-badge--warning {
-  background: var(--color-warning, #eab308);
+  background: var(--color-warning);
 }
 
 .mission-health-badge--error {
-  background: var(--color-error, #ef4444);
+  background: var(--color-error);
 }
 
 .mission-list__item-progress--healthy .mission-list__item-progress-bar {
-  background: var(--color-success, #22c55e);
+  background: var(--color-success);
 }
 
 .mission-list__item-progress--warning .mission-list__item-progress-bar {
-  background: var(--color-warning, #eab308);
+  background: var(--color-warning);
 }
 
 .mission-list__item-progress--error .mission-list__item-progress-bar {
-  background: var(--color-error, #ef4444);
+  background: var(--color-error);
 }
 
 .mission-list__item-failed {
   border: 0;
   background: transparent;
-  color: var(--color-error, #ef4444);
+  color: var(--color-error);
   font-size: 11px;
   padding: 0;
   cursor: pointer;
@@ -717,7 +717,7 @@
 }
 
 .mission-detail__autopilot-icon {
-  color: var(--color-warning, #eab308);
+  color: var(--color-warning);
 }
 
 .mission-detail__autopilot-activity {
@@ -802,12 +802,12 @@
 
 .mission-toggle input[type="checkbox"]:checked + .mission-toggle__track {
   background: var(--toggle-checked-bg);
-  border-color: var(--color-success, #22c55e);
+  border-color: var(--color-success);
 }
 
 .mission-toggle input[type="checkbox"]:checked + .mission-toggle__track .mission-toggle__thumb {
   transform: translateX(16px);
-  background: var(--color-success, #22c55e);
+  background: var(--color-success);
 }
 
 .mission-toggle input[type="checkbox"]:focus-visible + .mission-toggle__track {
@@ -1591,7 +1591,7 @@
   display: inline-flex;
   align-items: center;
   font-size: 11px;
-  color: #f97316;
+  color: var(--signal);
   background: rgba(249, 115, 22, 0.1);
   padding: 1px 6px;
   border-radius: var(--radius-sm);

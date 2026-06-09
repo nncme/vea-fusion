@@ -1,0 +1,56 @@
+/**
+ * DashboardHome — Option E composite homepage layout (DESIGN.md §4.3).
+ * AIME Leon Dore tokens only; no hardcoded hex.
+ */
+
+.dashboard-home {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--s7) var(--s6) var(--s8);
+  background: var(--paper);
+}
+
+.dashboard-home__masthead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s5);
+  max-width: var(--max);
+  margin: 0 auto var(--s6);
+  flex-wrap: wrap;
+}
+
+.dashboard-home__eyebrow {
+  margin: 0 0 var(--s1);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.dashboard-home__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+/* The DashboardCards grid is centred within the same max-width column. */
+.dashboard-home .top-cards {
+  max-width: var(--max);
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .dashboard-home {
+    padding: var(--s5) var(--s4) var(--s7);
+  }
+
+  .dashboard-home__title {
+    font-size: 26px;
+  }
+}

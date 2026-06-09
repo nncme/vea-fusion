@@ -793,7 +793,7 @@
 }
 
 .terminal-error-content span {
-  color: var(--error, #f48771);
+  color: var(--error);
   text-align: center;
 }
 
