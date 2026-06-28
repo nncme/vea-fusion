@@ -15,6 +15,7 @@ import type { DashboardCardsProps } from "./DashboardCards";
 import { DashboardLowerGrid } from "./DashboardLowerGrid";
 import type { DashboardLowerGridProps } from "./DashboardLowerGrid";
 import { SpotlightSummonChip } from "./SpotlightOverlay";
+import { LlmUsageSection } from "./LlmUsageSection";
 import "./DashboardHome.css";
 
 export interface DashboardHomeProps {
@@ -65,6 +66,8 @@ export function DashboardHome({
         footer={footer}
         onViewAll={onSummonSpotlight}
       />
+      {/* LG-3 / VISION §5.1 (D1): live LiteLLM usage merged into the home — additive */}
+      <LlmUsageSection />
     </main>
   );
 }
