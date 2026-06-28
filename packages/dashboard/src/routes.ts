@@ -3859,6 +3859,83 @@ export function createApiRoutes(store: TaskStore, options?: ServerOptions): Rout
     }
   });
 
+  /**
+   * GET /llm/usage?range=<1h|12h|24h|3d|5d|7d|14d|28d> — LLM Ops usage (LG-1).
+   * Serves the LiteLLM-sourced usage layer (`~/.claude/state/dashboard-data.json`,
+   * computed by dashboard-data.py from LiteLLM /spend/logs — the SAME source +
+   * computation as dev.nncm.me, so the numbers are parity-exact). Stale-while-
+   * revalidate: 60s in-memory cache; a best-effort background `dashboard-data.py`
+   * regen fires when the snapshot is >5min old (the 16s fetch never blocks the
+   * request). Graceful zeros on any failure.
+   */
+  const LLM_RANGES = ["1h", "12h", "24h", "3d", "5d", "7d", "14d", "28d"];
+  let _llmCache: { at: number; raw: Record<string, unknown> } | null = null;
+  let _llmRegenAt = 0;
+  router.get("/llm/usage", async (req, res) => {
+    const range = LLM_RANGES.includes(String(req.query.range)) ? String(req.query.range) : "24h";
+    const fallback = {
+      range, generated: null, source: "unavailable", stale: true,
+      kpis: { calls: 0, tokens: 0, t0TokenShare: 0, cloudSpendUsd: 0, tier0CallShare: 0 },
+      models: [], twoLedger: { ledgerA: null, maxBleed: null, headline: null },
+    };
+    try {
+      const homeDir = process.env.HOME || "/tmp";
+      const dataPath = join(homeDir, ".claude/state/dashboard-data.json");
+      const now = Date.now();
+
+      let cfg: Record<string, unknown>;
+      if (_llmCache && now - _llmCache.at < 60_000) {
+        cfg = _llmCache.raw;
+      } else {
+        cfg = JSON.parse(await nodeFs.promises.readFile(dataPath, "utf-8")) as Record<string, unknown>;
+        _llmCache = { at: now, raw: cfg };
+      }
+
+      const genMs = cfg.generated ? new Date(cfg.generated as string).getTime() : 0;
+      const ageMin = (now - genMs) / 60000;
+      if (ageMin > 5 && now - _llmRegenAt > 60_000) {
+        _llmRegenAt = now;
+        try {
+          const cp = await import("node:child_process");
+          const child = cp.spawn("python3", [join(homeDir, ".claude/scripts/dashboard-data.py")], { detached: true, stdio: "ignore" });
+          child.unref();
+        } catch { /* best-effort; the snapshot is still served */ }
+      }
+
+      const ranges = (cfg.ranges ?? {}) as Record<string, { totals?: Record<string, number>; by_model?: Record<string, unknown>[] }>;
+      const r = ranges[range];
+      if (!r) return res.json(fallback);
+      const t = (r.totals ?? {}) as Record<string, number>;
+      const ccMax = (cfg.claude_code_max as { ranges?: Record<string, { totals?: unknown }> } | undefined)?.ranges?.[range]?.totals ?? null;
+      const headline = (cfg.ledger_b_max as Record<string, unknown> | undefined)?.headline ?? null;
+
+      res.json({
+        range,
+        generated: cfg.generated ?? null,
+        source: cfg.source ?? "LiteLLM /spend/logs",
+        stale: ageMin > 5,
+        kpis: {
+          calls: t.calls ?? 0,
+          tokens: t.total_tok ?? 0,
+          t0TokenShare: t.total_tok ? (t.t0_tok ?? 0) / t.total_tok : 0,
+          cloudSpendUsd: t.spend ?? 0,
+          tier0CallShare: t.tier0_call_share ?? 0,
+        },
+        models: (r.by_model ?? []).map((m) => {
+          const mm = m as Record<string, unknown>;
+          return {
+            model: mm.model, calls: mm.calls ?? 0, spendUsd: mm.spend ?? 0,
+            promptTok: mm.prompt_tok ?? 0, completionTok: mm.completion_tok ?? 0,
+            totalTok: mm.total_tok ?? 0, cacheHits: mm.cache_hits ?? 0, tier: mm.tier ?? "",
+          };
+        }),
+        twoLedger: { ledgerA: t, maxBleed: ccMax, headline },
+      });
+    } catch {
+      res.json(fallback);
+    }
+  });
+
   router.post("/complete-setup", async (req, res) => {
     try {
       const { CentralCore } = await import("@fusion/core");
