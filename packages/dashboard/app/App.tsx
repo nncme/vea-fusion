@@ -28,6 +28,10 @@ import { ActionTicker } from "./components/ActionTicker";
 import { SpotlightOverlay } from "./components/SpotlightOverlay";
 import { DashboardHome } from "./components/DashboardHome";
 import { ToastContainer } from "./components/ToastContainer";
+import { usePendingDecisions } from "./hooks/usePendingDecisions";
+import { useTokensPerHour } from "./hooks/useTokensPerHour";
+import { useRuntimeHealth } from "./hooks/useRuntimeHealth";
+import { useActionTickerItems } from "./hooks/useActionTickerItems";
 import { useBackgroundSessions } from "./hooks/useBackgroundSessions";
 import { useTasks } from "./hooks/useTasks";
 import { useProjects } from "./hooks/useProjects";
@@ -296,6 +300,14 @@ function AppInner() {
   const [retryingProjects, setRetryingProjects] = useState(false);
   const [missionResumeSessionId, setMissionResumeSessionId] = useState<string | undefined>(undefined);
   const [missionTargetId, setMissionTargetId] = useState<string | undefined>(undefined);
+
+  // ── C.4 live-data hooks (Phase B/C) — feed the Option E homepage cards +
+  // ActionTicker with real Fabric / runtime data, replacing the prior stubs.
+  // Each hook polls every 30s and degrades gracefully to its own fallback.
+  const pendingDecisions = usePendingDecisions();
+  const tokensPerHour = useTokensPerHour();
+  const runtimeHealth = useRuntimeHealth();
+  const actionTickerItems = useActionTickerItems();
   const [milestoneSliceResumeSessionId, setMilestoneSliceResumeSessionId] = useState<string | undefined>(undefined);
   const [quickChatOpen, setQuickChatOpen] = useState(false);
   const [authTokenRecoveryOpen, setAuthTokenRecoveryOpen] = useState(false);
@@ -865,14 +877,14 @@ function AppInner() {
       <TopBar
         activeTab={topBarActiveTab}
         onTabChange={handleTopBarTab}
-        fabricPendingCount={FABRIC_PENDING_COUNT_STUB}
+        fabricPendingCount={pendingDecisions?.count ?? FABRIC_PENDING_COUNT_STUB}
         onSummonFabric={openSpotlight}
         tailnetIp="100.93.222.17"
         operatorInitials="CN"
         themeMode={themeMode}
         onThemeModeChange={setThemeMode}
       />
-      <ActionTicker onItemActivate={openSpotlight} />
+      <ActionTicker items={actionTickerItems} onItemActivate={openSpotlight} />
     </>
   );
   const optionESpotlight = (
@@ -899,9 +911,14 @@ function AppInner() {
     return (
       <>
         {optionEFrame}
-        {/* DashboardHome's pending/tokens/runtime props are intentionally
-            unpassed — that live-binding seam is a deferred wave (DESIGN.md §7). */}
-        <DashboardHome onSummonSpotlight={openSpotlight} />
+        {/* C.4 live-binding (Phase B/C, 2026-06-28): pending/tokens/runtime now
+            flow from live Fabric/runtime hooks — no longer stubs. */}
+        <DashboardHome
+          pending={pendingDecisions}
+          tokens={tokensPerHour}
+          runtime={runtimeHealth}
+          onSummonSpotlight={openSpotlight}
+        />
         {optionESpotlight}
         {optionEGlobalOverlays}
         <ToastContainer toasts={toasts} onRemove={removeToast} />

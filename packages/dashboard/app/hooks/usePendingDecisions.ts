@@ -67,7 +67,7 @@ function formatAge(timestamp: string | number | undefined): string {
  * - materiality 0.5–0.8 or status="high" → "high" (gold)
  * - otherwise → "norm" (cream)
  */
-function prioritizeRequest(req: FabricStats["requests"]?.[0]): DecisionPriority {
+function prioritizeRequest(req: NonNullable<FabricStats["requests"]>[number] | undefined): DecisionPriority {
   if (!req) return "norm";
 
   const mat = req.materiality ?? 0;
