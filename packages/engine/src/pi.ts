@@ -43,6 +43,7 @@ import {
 import { isContextLimitError } from "./context-limit-detector.js";
 import { createFusionAuthStorage, getModelRegistryModelsPath } from "./auth-storage.js";
 import { piLog, extensionsLog } from "./logger.js";
+import { registerFdProvider, applyFdModelOverride } from "./fd-litellm-route.js";
 
 export interface AgentResult {
   session: AgentSession;
@@ -991,6 +992,19 @@ export async function createFnAgent(options: AgentOptions): Promise<AgentResult>
   const authStorage = createFusionAuthStorage();
   const modelRegistry = ModelRegistry.create(authStorage, getModelRegistryModelsPath());
   await registerExtensionProviders(options.cwd, modelRegistry);
+
+  // E1 — FD-local LiteLLM route (flag-gated; default OFF → no-op).
+  // INV-1: when VEA_LLM_ROUTE_FD=1, pin every session to FD Tier-0 local
+  // and NEVER fall through to a Claude Max / anthropic / openrouter default.
+  registerFdProvider(modelRegistry);
+  {
+    const fdPrimary = applyFdModelOverride(options.defaultProvider, options.defaultModelId);
+    options.defaultProvider = fdPrimary.provider;
+    options.defaultModelId = fdPrimary.modelId;
+    const fdFallback = applyFdModelOverride(options.fallbackProvider, options.fallbackModelId);
+    options.fallbackProvider = fdFallback.provider;
+    options.fallbackModelId = fdFallback.modelId;
+  }
 
   // Build the pi built-in tool set. We deliberately do NOT use the bundled
   // `createCodingTools` / `createReadOnlyTools` presets — they're missing

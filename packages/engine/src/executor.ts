@@ -46,6 +46,7 @@ import {
 } from "./agent-tools.js";
 import { getTaskCompletionBlockerForStore } from "./task-completion.js";
 import { createFusionAuthStorage, getModelRegistryModelsPath } from "./auth-storage.js";
+import { registerFdProvider } from "./fd-litellm-route.js";
 
 // Re-export for backward compatibility (tests import from executor.ts)
 export { summarizeToolArgs } from "./agent-logger.js";
@@ -527,6 +528,8 @@ export class TaskExecutor {
       const authStorage = createFusionAuthStorage();
       this._modelRegistry = ModelRegistry.create(authStorage, getModelRegistryModelsPath());
       this._modelRegistry.refresh();
+      // E1 — FD route (flag-gated; no-op when OFF) so hot-swap find() resolves FD ids.
+      registerFdProvider(this._modelRegistry);
     }
     return this._modelRegistry;
   }
