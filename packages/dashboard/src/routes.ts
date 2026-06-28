@@ -3802,6 +3802,63 @@ export function createApiRoutes(store: TaskStore, options?: ServerOptions): Rout
     }
   });
 
+  /**
+   * GET /api/vea/identities — the canonical 8-agent VEA roster (B3/B4).
+   * Reads config/identities.json and returns Core-3 (by display_persona) +
+   * the 5 domain orchestrators (by fusion_subagent_persona, with their
+   * Core-3 parent_runtime). Domain orchestrators are graduation_status
+   * "internal-only" — surfaced as sub-personas under their parents, never
+   * the raw runtime hint. Graceful fallback if the config is unreadable.
+   */
+  router.get("/vea/identities", async (_req, res) => {
+    try {
+      const homeDir = process.env.HOME || "/tmp";
+      const idPath = join(homeDir, "Documents/Development/vea/config/identities.json");
+
+      let raw: string;
+      try {
+        raw = await nodeFs.promises.readFile(idPath, "utf-8");
+      } catch {
+        return res.json({ count: 0, version: null, agents: [], error: `identities.json not found at ${idPath}` });
+      }
+
+      const cfg = JSON.parse(raw) as Record<string, unknown>;
+      const core = Array.isArray(cfg.core_agents) ? (cfg.core_agents as Record<string, unknown>[]) : [];
+      const domain = Array.isArray(cfg.domain_orchestrators) ? (cfg.domain_orchestrators as Record<string, unknown>[]) : [];
+
+      const agents = [
+        ...core.map((a) => {
+          const runtime = (a.runtime ?? {}) as Record<string, unknown>;
+          return {
+            id: a.id as string,
+            persona: a.display_persona as string,
+            kind: "core" as const,
+            parent: null as string | null,
+            runtime: (runtime.hint as string) ?? null,
+            host: (runtime.host as string) ?? null,
+            graduation: "core",
+          };
+        }),
+        ...domain.map((d) => ({
+          id: d.id as string,
+          persona: d.fusion_subagent_persona as string,
+          kind: "domain" as const,
+          parent: (d.parent_runtime as string) ?? null,
+          runtime: (d.parent_runtime as string) ?? null,
+          host: null as string | null,
+          graduation: (d.graduation_status as string) ?? "internal-only",
+        })),
+      ];
+
+      res.json({ count: agents.length, version: (cfg.version as number) ?? null, agents });
+    } catch (err) {
+      res.status(500).json({
+        error: "Failed to read identities",
+        details: err instanceof Error ? err.message : String(err),
+      });
+    }
+  });
+
   router.post("/complete-setup", async (req, res) => {
     try {
       const { CentralCore } = await import("@fusion/core");

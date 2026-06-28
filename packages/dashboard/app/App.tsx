@@ -32,6 +32,7 @@ import { usePendingDecisions } from "./hooks/usePendingDecisions";
 import { useTokensPerHour } from "./hooks/useTokensPerHour";
 import { useRuntimeHealth } from "./hooks/useRuntimeHealth";
 import { useActionTickerItems } from "./hooks/useActionTickerItems";
+import { useVeaRoster } from "./hooks/useVeaRoster";
 import { useBackgroundSessions } from "./hooks/useBackgroundSessions";
 import { useTasks } from "./hooks/useTasks";
 import { useProjects } from "./hooks/useProjects";
@@ -308,6 +309,7 @@ function AppInner() {
   const tokensPerHour = useTokensPerHour();
   const runtimeHealth = useRuntimeHealth();
   const actionTickerItems = useActionTickerItems();
+  const veaRoster = useVeaRoster(); // 8-agent roster from identities.json (B3/B4)
   const [milestoneSliceResumeSessionId, setMilestoneSliceResumeSessionId] = useState<string | undefined>(undefined);
   const [quickChatOpen, setQuickChatOpen] = useState(false);
   const [authTokenRecoveryOpen, setAuthTokenRecoveryOpen] = useState(false);
@@ -917,6 +919,7 @@ function AppInner() {
           pending={pendingDecisions}
           tokens={tokensPerHour}
           runtime={runtimeHealth}
+          roster={veaRoster}
           onSummonSpotlight={openSpotlight}
         />
         {optionESpotlight}
