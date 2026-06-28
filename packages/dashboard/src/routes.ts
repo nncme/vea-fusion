@@ -3684,7 +3684,7 @@ export function createApiRoutes(store: TaskStore, options?: ServerOptions): Rout
    * GET /api/fabric/stats — relay Fabric service stats for Pending Decisions card.
    * Proxies http://100.68.214.103:8445/stats (internal Fabric service).
    */
-  router.get("/api/fabric/stats", async (_req, res) => {
+  router.get("/fabric/stats", async (_req, res) => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -3718,7 +3718,7 @@ export function createApiRoutes(store: TaskStore, options?: ServerOptions): Rout
    * GET /api/fabric/log — relay Fabric service activity log for ActionTicker.
    * Proxies http://100.68.214.103:8445/log (internal Fabric service).
    */
-  router.get("/api/fabric/log", async (_req, res) => {
+  router.get("/fabric/log", async (_req, res) => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -3752,7 +3752,7 @@ export function createApiRoutes(store: TaskStore, options?: ServerOptions): Rout
    * GET /api/vea/kg — Knowledge Graph summary (entity count, recent additions).
    * Reads ~/Documents/Development/basic-memory/knowledge-graph.jsonl directly.
    */
-  router.get("/api/vea/kg", async (_req, res) => {
+  router.get("/vea/kg", async (_req, res) => {
     try {
       const homeDir = process.env.HOME || "/tmp";
       const kgPath = join(homeDir, "Documents/Development/basic-memory/knowledge-graph.jsonl");
