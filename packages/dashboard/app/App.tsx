@@ -27,6 +27,7 @@ import { TopBar, type TopBarTab } from "./components/TopBar";
 import { ActionTicker } from "./components/ActionTicker";
 import { SpotlightOverlay } from "./components/SpotlightOverlay";
 import { DashboardHome } from "./components/DashboardHome";
+import { LlmOpsView } from "./components/LlmOpsView";
 import { ToastContainer } from "./components/ToastContainer";
 import { usePendingDecisions } from "./hooks/usePendingDecisions";
 import { useTokensPerHour } from "./hooks/useTokensPerHour";
@@ -310,6 +311,7 @@ function AppInner() {
   const runtimeHealth = useRuntimeHealth();
   const actionTickerItems = useActionTickerItems();
   const veaRoster = useVeaRoster(); // 8-agent roster from identities.json (B3/B4)
+  const [llmOpsOpen, setLlmOpsOpen] = useState(false); // LG-4: "LLM Ops" tab
   const [milestoneSliceResumeSessionId, setMilestoneSliceResumeSessionId] = useState<string | undefined>(undefined);
   const [quickChatOpen, setQuickChatOpen] = useState(false);
   const [authTokenRecoveryOpen, setAuthTokenRecoveryOpen] = useState(false);
@@ -467,7 +469,9 @@ function AppInner() {
   // --- Option E TopBar router (depends on useProjectActions/useViewState) ---
   // The TopBar's active tab is derived: "dashboard" while on the Option E
   // homepage, otherwise it reflects whichever existing view is showing.
-  const topBarActiveTab: TopBarTab = optionEHome
+  const topBarActiveTab: TopBarTab = llmOpsOpen
+    ? "llm-ops"
+    : optionEHome
     ? "dashboard"
     : taskView === "agents"
       ? "agents"
@@ -482,20 +486,28 @@ function AppInner() {
     (tab: TopBarTab) => {
       switch (tab) {
         case "dashboard":
+          setLlmOpsOpen(false);
           setOptionEHome(true);
           return;
         case "agents":
+          setLlmOpsOpen(false);
           setOptionEHome(false);
           handleTaskViewChange("agents");
           return;
         case "kg":
           // Knowledge Graph maps to the existing Memory view.
+          setLlmOpsOpen(false);
           setOptionEHome(false);
           handleTaskViewChange("memory");
           return;
         case "decisions":
           // Decisions = the Fabric approval queue → ⌘K spotlight.
           openSpotlight();
+          return;
+        case "llm-ops":
+          // LG-4: native LLM Ops console (reference surfaces); usage is on the home.
+          setOptionEHome(false);
+          setLlmOpsOpen(true);
           return;
         case "settings":
           handleOpenSettings();
@@ -907,6 +919,19 @@ function AppInner() {
       <AuthTokenRecoveryDialog open={authTokenRecoveryOpen} />
     </>
   );
+
+  // --- LG-4: "LLM Ops" tab — native console reference surfaces (ambient frame) --
+  if (llmOpsOpen) {
+    return (
+      <>
+        {optionEFrame}
+        <LlmOpsView />
+        {optionESpotlight}
+        {optionEGlobalOverlays}
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
+      </>
+    );
+  }
 
   // --- Option E homepage (the new additive default landing) ----------------
   if (optionEHome) {

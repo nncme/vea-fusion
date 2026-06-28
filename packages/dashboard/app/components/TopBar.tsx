@@ -21,6 +21,7 @@ export type TopBarTab =
   | "agents"
   | "kg"
   | "decisions"
+  | "llm-ops"
   | "settings";
 
 interface PrimaryNavItem {
@@ -34,6 +35,7 @@ const PRIMARY_TABS: PrimaryNavItem[] = [
   { id: "agents", label: "Agents" },
   { id: "kg", label: "Knowledge Graph" },
   { id: "decisions", label: "Decisions" },
+  { id: "llm-ops", label: "LLM Ops" },
   { id: "settings", label: "Settings" },
 ];
 
