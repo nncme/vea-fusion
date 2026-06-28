@@ -10,11 +10,16 @@
   align-items: stretch;
   height: var(--topbar-h);
   padding-left: var(--s5);
+  padding-right: var(--s4); /* R5: prevent the right cluster clipping at the edge */
   background: color-mix(in srgb, var(--paper) 86%, transparent);
   color: var(--ink);
   border-bottom: 1px solid color-mix(in srgb, var(--hairline) 10%, transparent);
   backdrop-filter: blur(10px) saturate(110%);
   -webkit-backdrop-filter: blur(10px) saturate(110%);
+  /* R5: sticky nav — stays pinned on scroll across all surfaces. */
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
 /* --- Brand ----------------------------------------------------------- */
@@ -64,6 +69,14 @@
   flex: 1;
   min-width: 0;
   gap: 0;
+  /* R5: when 6 tabs + links exceed the flex region (≈880–1518px band), scroll
+     horizontally inside the nav instead of overflowing into the right cluster.
+     Scrollbar hidden for a clean bar; all tabs remain reachable. */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.topbar-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .topbar-tab {
@@ -147,6 +160,7 @@
   gap: var(--s3);
   margin-left: auto;
   padding-right: var(--s2);
+  flex-shrink: 0; /* R5: never let the nav squeeze/clip the right cluster (avatar) */
 }
 
 /* Theme toggle */
@@ -376,5 +390,21 @@
   /* Right cluster condenses — tailnet label hidden, Fabric becomes a badge. */
   .topbar-tailnet-label {
     display: none;
+  }
+}
+
+/* R5: small phones — drop the non-essential tailnet pill AND condense the
+   Fabric pill to glyph + count badge (hide its "Fabric" label + ⌘K hint) so
+   the hamburger menu trigger is never pushed off-screen. */
+@media (max-width: 560px) {
+  .topbar-tailnet {
+    display: none;
+  }
+  .topbar-fabric-label,
+  .topbar-fabric .topbar-kbd {
+    display: none;
+  }
+  .topbar-right {
+    gap: var(--s2);
   }
 }

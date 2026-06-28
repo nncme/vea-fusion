@@ -223,6 +223,7 @@ export function TopBar({
       {/* --- Primary + external nav --------------------------------- */}
       <nav
         ref={navRef}
+        id="topbar-primary-nav"
         className={`topbar-nav${isMobileNavOpen ? " topbar-nav--open" : ""}`}
         role="navigation"
         aria-label="Primary"
@@ -339,6 +340,7 @@ export function TopBar({
         onClick={() => setIsMobileNavOpen((prev) => !prev)}
         aria-label={isMobileNavOpen ? "Close menu" : "Open menu"}
         aria-expanded={isMobileNavOpen}
+        aria-controls="topbar-primary-nav"
         data-testid="topbar-hamburger"
       >
         <span className="topbar-hamburger-bar" aria-hidden="true" />

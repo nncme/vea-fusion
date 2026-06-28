@@ -34,6 +34,7 @@ import { useTokensPerHour } from "./hooks/useTokensPerHour";
 import { useRuntimeHealth } from "./hooks/useRuntimeHealth";
 import { useActionTickerItems } from "./hooks/useActionTickerItems";
 import { useVeaRoster } from "./hooks/useVeaRoster";
+import { useLiveEvents } from "./hooks/useLiveEvents";
 import { useBackgroundSessions } from "./hooks/useBackgroundSessions";
 import { useTasks } from "./hooks/useTasks";
 import { useProjects } from "./hooks/useProjects";
@@ -100,9 +101,8 @@ function prefetchLazyViews() {
 
 const SETUP_WARNING_DISMISSED_KEY = "kb-setup-warning-dismissed";
 
-// TODO(live-binding): Option E TopBar Fabric badge — stub count until the
-// Fabric approval-queue live binding lands (DESIGN.md §7, deferred wave).
-const FABRIC_PENDING_COUNT_STUB = 5;
+// Fabric badge count is live-bound to pendingDecisions (remediation R4 —
+// the prior stub-5 fallback is removed; 0 is a valid live count).
 
 function AppInner() {
   const { toasts, addToast, removeToast } = useToast();
@@ -311,6 +311,7 @@ function AppInner() {
   const runtimeHealth = useRuntimeHealth();
   const actionTickerItems = useActionTickerItems();
   const veaRoster = useVeaRoster(); // 8-agent roster from identities.json (B3/B4)
+  const liveEvents = useLiveEvents(); // live event stream from Fabric log (remediation R2)
   const [llmOpsOpen, setLlmOpsOpen] = useState(false); // LG-4: "LLM Ops" tab
   const [milestoneSliceResumeSessionId, setMilestoneSliceResumeSessionId] = useState<string | undefined>(undefined);
   const [quickChatOpen, setQuickChatOpen] = useState(false);
@@ -891,7 +892,7 @@ function AppInner() {
       <TopBar
         activeTab={topBarActiveTab}
         onTabChange={handleTopBarTab}
-        fabricPendingCount={pendingDecisions?.count ?? FABRIC_PENDING_COUNT_STUB}
+        fabricPendingCount={pendingDecisions?.count ?? 0}
         onSummonFabric={openSpotlight}
         tailnetIp="100.93.222.17"
         operatorInitials="CN"
@@ -945,6 +946,12 @@ function AppInner() {
           tokens={tokensPerHour}
           runtime={runtimeHealth}
           roster={veaRoster}
+          events={liveEvents}
+          footer={[
+            { label: "Fabric", value: `${pendingDecisions?.count ?? 0} pending`, tone: (pendingDecisions?.count ?? 0) > 0 ? "accent" : "signal" },
+            { label: "Live events", value: `${liveEvents.length} recent` },
+            { label: "Runtime", value: `${(runtimeHealth ?? []).filter((h) => h.status === "ok").length}/${(runtimeHealth ?? []).length} healthy`, tone: "signal" },
+          ]}
           onSummonSpotlight={openSpotlight}
         />
         {optionESpotlight}

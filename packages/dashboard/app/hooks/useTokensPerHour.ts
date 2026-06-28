@@ -1,148 +1,99 @@
 /**
- * useTokensPerHour — fetch daemon usage data and transform into Tokens/Hour card props.
+ * useTokensPerHour — Tokens/Hour card props from the LIVE LiteLLM usage layer.
  *
- * **Source:** GET /api/executor/stats (existing Fusion daemon endpoint)
- * **Transform:** Extract tokens/hour value, build 7-point sparkline, compute trend %
- * **Fallback:** Returns stub data if endpoint unavailable (graceful degradation)
+ * **Source:** GET /api/llm/usage?range=<r> for several windows (server-side 60s
+ *   cached, so multiple range calls are cheap). Real tokens/hour = total_tok /
+ *   window_hours per window; sparkline = the per-window rates; trend = 24h vs 7d.
+ * **Fallback:** graceful "—" if the usage layer is unavailable.
  *
- * C.4.3 BLOCKER — Phase B data-wiring layer
+ * Replaces the prior /api/executor/stats source, which carried no token fields
+ * (the card rendered a dead "—"). Polls every 30s.
  */
 
 import { useEffect, useState } from "react";
 import type { TokensPerHourData } from "../components/DashboardCards";
 
-interface ExecutorStats {
-  tokensPerHour?: number;
-  tokensPerHourHistory?: number[];
-  avgTokensPerHour?: number;
-  peakTokensPerHour?: number;
-  minTokensPerHour?: number;
-}
+const HOURS: Record<string, number> = { "1h": 1, "12h": 12, "24h": 24, "3d": 72, "5d": 120, "7d": 168, "14d": 336, "28d": 672 };
+// Windows used to build the sparkline (recent → longer), newest-rate last.
+const SERIES_RANGES = ["1h", "12h", "24h", "3d", "5d", "7d", "14d", "28d"];
 
-/**
- * Stub/fallback data used when executor stats are unavailable.
- */
 const STUB_DATA: TokensPerHourData = {
   value: "—",
   unit: "tok/h",
   trendPct: 0,
   trendDirection: "down",
-  series: [6.2, 7.1, 9.4, 11.2, 10.3, 5.1, 8.4],
+  series: [],
   minLabel: "min —",
   peakLabel: "peak —",
 };
 
-/**
- * Format a numeric value into a human-readable "Xk" format.
- * Examples: 8400 → "8.4k", 1234 → "1.2k", 100 → "100"
- */
-function formatTokens(val: number | undefined): string {
-  if (val === undefined || val === 0) return "—";
+function formatTokens(val: number): string {
+  if (!val || val <= 0) return "—";
+  if (val >= 1_000_000) return `${(val / 1e6).toFixed(1)}M`;
   if (val >= 1000) return `${(val / 1000).toFixed(1)}k`;
   return String(Math.round(val));
 }
 
-/**
- * Compute percentage change between two values.
- * Returns the magnitude (always positive); use trendDirection separately.
- */
-function computeTrendPct(current: number, previous: number): number {
-  if (previous === 0) return 0;
-  const pct = Math.abs(((current - previous) / previous) * 100);
-  return Math.round(pct);
+async function fetchRate(range: string): Promise<number | null> {
+  try {
+    const res = await fetch(`/api/llm/usage?range=${range}`, { credentials: "include" });
+    if (!res.ok) return null;
+    const j = await res.json();
+    const tok = j?.kpis?.tokens ?? j?.twoLedger?.ledgerA?.total_tok ?? 0;
+    const hrs = HOURS[range] ?? 1;
+    return tok > 0 ? tok / hrs : 0;
+  } catch {
+    return null;
+  }
 }
 
-/**
- * Determine trend direction based on current vs 7-day average.
- */
-function getTrendDirection(current: number, series: number[]): "up" | "down" {
-  if (series.length === 0) return "down";
-  const avg = series.reduce((a, b) => a + b, 0) / series.length;
-  return current > avg ? "up" : "down";
-}
-
-/**
- * Transform executor stats JSON into Tokens/Hour card props.
- */
-function transformStats(stats: ExecutorStats): TokensPerHourData {
-  const current = stats.tokensPerHour ?? 0;
-  const series = stats.tokensPerHourHistory ?? [];
-  const peak = stats.peakTokensPerHour ?? 0;
-  const min = stats.minTokensPerHour ?? 0;
-
-  // If we have history, use it; otherwise use a fallback 7-point series
-  const sparklineSeries = series.length > 0 ? series.slice(-7) : STUB_DATA.series;
-
-  // Compute trend: current vs the average of the series
-  const prev = sparklineSeries.length > 0 ? sparklineSeries[0] : current;
-  const trendPct = computeTrendPct(current, prev);
-  const trendDirection = getTrendDirection(current, sparklineSeries);
-
-  return {
-    value: formatTokens(current),
-    unit: "tok/h",
-    trendPct,
-    trendDirection,
-    series: sparklineSeries,
-    minLabel: `min ${formatTokens(min)}`,
-    peakLabel: `peak ${formatTokens(peak)}`,
-  };
-}
-
-/**
- * Fetch executor stats and return Tokens/Hour card props.
- * Re-fetches every 30 seconds if the API is healthy.
- */
 export function useTokensPerHour(): TokensPerHourData {
   const [data, setData] = useState<TokensPerHourData>(STUB_DATA);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-    let pollIntervalId: ReturnType<typeof setInterval> | null = null;
+    let mounted = true;
+    let pollId: ReturnType<typeof setInterval> | null = null;
 
-    const fetchData = async () => {
+    const load = async () => {
       try {
-        const response = await fetch("/api/executor/stats", {
-          credentials: "include",
+        const rates = await Promise.all(SERIES_RANGES.map(fetchRate));
+        if (!mounted) return;
+        const valid = rates.map((r, i) => ({ r, range: SERIES_RANGES[i] })).filter((x) => x.r !== null) as { r: number; range: string }[];
+        if (valid.length === 0) { setData(STUB_DATA); setError("no usage data"); return; }
+
+        const series = valid.map((x) => Math.round(x.r));
+        const cur = valid.find((x) => x.range === "24h")?.r ?? valid[0].r;        // headline = 24h rate
+        const wk = valid.find((x) => x.range === "7d")?.r ?? cur;                  // trend baseline = 7d rate
+        const trendPct = wk > 0 ? Math.round(Math.abs((cur - wk) / wk) * 100) : 0;
+        const trendDirection: "up" | "down" = cur >= wk ? "up" : "down";
+        const nonzero = series.filter((s) => s > 0);
+        const min = nonzero.length ? Math.min(...nonzero) : 0;
+        const peak = series.length ? Math.max(...series) : 0;
+
+        setData({
+          value: formatTokens(cur),
+          unit: "tok/h",
+          trendPct,
+          trendDirection,
+          series: series.length ? series : [0],
+          minLabel: `min ${formatTokens(min)}`,
+          peakLabel: `peak ${formatTokens(peak)}`,
         });
-
-        if (!response.ok) {
-          throw new Error(`Executor stats returned ${response.status}`);
-        }
-
-        const stats: ExecutorStats = await response.json();
-
-        if (isMounted) {
-          setData(transformStats(stats));
-          setError(null);
-        }
+        setError(null);
       } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        if (isMounted) {
-          setError(msg);
-          // Keep rendering stub data on error
-          setData(STUB_DATA);
-        }
+        if (mounted) { setError(err instanceof Error ? err.message : String(err)); setData(STUB_DATA); }
       }
     };
 
-    // Initial fetch
-    fetchData();
-
-    // Poll every 30 seconds
-    pollIntervalId = setInterval(fetchData, 30000);
-
-    return () => {
-      isMounted = false;
-      if (pollIntervalId) clearInterval(pollIntervalId);
-    };
+    load();
+    pollId = setInterval(load, 30000);
+    return () => { mounted = false; if (pollId) clearInterval(pollId); };
   }, []);
 
-  // Log errors to console for debugging (remove in prod)
   if (error && process.env.NODE_ENV === "development") {
-    console.warn("[useTokensPerHour] fetch error:", error);
+    // eslint-disable-next-line no-console
+    console.warn("[useTokensPerHour] ", error);
   }
-
   return data;
 }
